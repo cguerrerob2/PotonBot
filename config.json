@@ -1,0 +1,18 @@
+{
+  "threshold": 5,
+  "window_minutes": 30,
+  "alert_cooldown_minutes": 10,
+  "realert_extra_wallets": 2,
+  "solana": {
+    "poll_interval_sec": 8,
+    "wallets_per_cycle": 10,
+    "signatures_limit": 5,
+    "max_txs_per_wallet_cycle": 3
+  },
+  "evm": {
+    "enabled": true,
+    "poll_interval_sec": 15,
+    "wallets_per_cycle": 5,
+    "txs_limit": 10
+  }
+}

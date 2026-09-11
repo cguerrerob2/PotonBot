@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 from src.tracker import BuyTracker
 from src.state import State
+from src.buylog import BuyLog
 from src.solana_monitor import SolanaMonitor
 from src.evm_monitor import EvmMonitor
 from src.discord_bot import PotonBot
@@ -154,6 +155,8 @@ async def main():
     )
 
     state = State(os.path.join(BASE_DIR, "data", "state.json"))
+    buylog = BuyLog(os.path.join(BASE_DIR, "data", "buys.json"))
+    bot.set_call_config(cfg.get("discord_calls", {}), buylog)
 
     await bot.send_startup(
         n_sol=len(sol_wallets),
@@ -166,12 +169,12 @@ async def main():
     # ---- Monitors ----
     tasks = []
     if sol_wallets:
-        sol = SolanaMonitor(sol_rpc, sol_wallets, tracker, state, cfg.get("solana", {}))
+        sol = SolanaMonitor(sol_rpc, sol_wallets, tracker, state, cfg.get("solana", {}), buylog=buylog)
         tasks.append(asyncio.create_task(sol.run()))
 
     if evm_wallets and cfg.get("evm", {}).get("enabled", True):
         if etherscan_key:
-            evm = EvmMonitor(etherscan_key, evm_wallets, tracker, state, cfg.get("evm", {}))
+            evm = EvmMonitor(etherscan_key, evm_wallets, tracker, state, cfg.get("evm", {}), buylog=buylog)
             tasks.append(asyncio.create_task(evm.run()))
         else:
             log("EVM wallets found but ETHERSCAN_API_KEY is missing — EVM monitor disabled.")

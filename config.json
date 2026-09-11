@@ -6,6 +6,12 @@
     "amount": 0.6,
     "names": ["superman", "martinshkreli", "vibed dev", "bwam", "devboost", "limdev", "fartdev", "kreo dev", "bundler", "boost", "pump app"]
   },
+  "discord_calls": {
+    "enabled": true,
+    "channel_id": "988615963647832124",
+    "tracked_user_ids": ["200854743161409536", "762454063161409536", "887713707474423850"],
+    "min_usd_before_call": 400
+  },
   "window_minutes": 30,
   "alert_cooldown_minutes": 10,
   "realert_extra_wallets": 2,

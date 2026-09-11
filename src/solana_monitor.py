@@ -199,13 +199,14 @@ class SolanaMonitor:
             tx = (item or {}).get("result")
             if not tx:
                 continue
-            for mint, amount in self._extract_buys(tx, w["address"]).items():
+            for mint, amount, sol_spent in self._extract_buys(tx, w["address"]):
                 self.buys_detected += 1
                 count, score_sum = await self.tracker.add_buy("SOL", mint, w["address"], {
                     "name": w["rename"],
                     "emoji": w.get("emoji", ""),
                     "wallet": w["address"],
                     "amount": amount,
+                    "sol_spent": sol_spent,
                     "symbol": "",
                     "tx_hash": sig,
                     "score": w.get("score", 0.3),
@@ -230,11 +231,11 @@ class SolanaMonitor:
 
     # ---------------- Parsing ----------------
 
-    def _extract_buys(self, tx: dict, wallet: str) -> dict:
-        """Returns {mint: amount_gained} if the tx is a DEX swap where the wallet gains tokens."""
+    def _extract_buys(self, tx: dict, wallet: str) -> list:
+        """Returns [(mint, amount_gained, sol_spent)] for DEX swaps where the wallet gains tokens."""
         meta = tx.get("meta") or {}
         if meta.get("err"):
-            return {}
+            return []
 
         # The tx must involve a known DEX
         programs = set()
@@ -249,7 +250,18 @@ class SolanaMonitor:
                 if ix.get("programId"):
                     programs.add(ix["programId"])
         if not (programs & DEX_PROGRAMS):
-            return {}
+            return []
+
+        # SOL spent by the wallet (lamport delta of its account; +fees, close enough)
+        sol_spent = 0.0
+        keys_list = message.get("accountKeys") or []
+        pre_bal = meta.get("preBalances") or []
+        post_bal = meta.get("postBalances") or []
+        for i, k in enumerate(keys_list):
+            pk = k.get("pubkey") if isinstance(k, dict) else k
+            if pk == wallet and i < len(pre_bal) and i < len(post_bal):
+                sol_spent = max(0.0, (pre_bal[i] - post_bal[i]) / 1e9)
+                break
 
         def balances(entries):
             out = {}
@@ -267,11 +279,11 @@ class SolanaMonitor:
         pre = balances(meta.get("preTokenBalances"))
         post = balances(meta.get("postTokenBalances"))
 
-        gains = {}
+        gains = []
         for mint, post_amt in post.items():
             if mint in EXCLUDED_MINTS:
                 continue
             delta = post_amt - pre.get(mint, 0.0)
             if delta > 0:
-                gains[mint] = delta
+                gains.append((mint, delta, sol_spent))
         return gains

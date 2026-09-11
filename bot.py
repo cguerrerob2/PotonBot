@@ -12,7 +12,7 @@ from src.state import State
 from src.solana_monitor import SolanaMonitor
 from src.evm_monitor import EvmMonitor
 from src.discord_bot import PotonBot
-from src.dexscreener import fetch_token_info
+from src.dexscreener import fetch_token_info, fetch_sol_price
 from src.solana_extras import get_top_holders, get_pump_info
 from src.logutil import log as _log
 
@@ -129,9 +129,10 @@ async def main():
         log(f"Solana RPC OK: {sol_rpc[:60]}")
 
     async def on_alert(chain, token_addr, count, score_sum, buys):
-        # Dashboard: Dexscreener + (SOL) top holders & pump.fun data, all in parallel
-        info, holders, pump = await asyncio.gather(
+        # Dashboard: Dexscreener + SOL price + (SOL) top holders & pump.fun data, in parallel
+        info, sol_price, holders, pump = await asyncio.gather(
             fetch_token_info(chain, token_addr),
+            fetch_sol_price() if chain == "SOL" else asyncio.sleep(0, result=None),
             get_top_holders(sol_rpc, token_addr) if chain == "SOL" else asyncio.sleep(0, result={}),
             get_pump_info(token_addr) if chain == "SOL" else asyncio.sleep(0, result={}),
         )
@@ -139,7 +140,7 @@ async def main():
         pair_addr = (info or {}).get("pair_address")
         if chain == "SOL" and pair_addr and holders:
             holders["top5"] = [(a, p) for a, p in holders["top5"] if a != pair_addr][:5]
-        extra = {"holders": holders, "pump": pump}
+        extra = {"holders": holders, "pump": pump, "sol_price": sol_price}
         await bot.send_alert(chain, token_addr, count, score_sum, buys, info, extra)
 
     tracker = BuyTracker(

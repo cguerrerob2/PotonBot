@@ -122,8 +122,26 @@ async def main():
         pct = rank / (n - 1) if n > 1 else 1.0
         scores[addr] = round(MIN_SCORE + (MAX_SCORE - MIN_SCORE) * pct, 3)
 
+    # ---- Penalties (deployers / mass-deploy devs, config.json) ----
+    cfg = {}
+    cfg_path = os.path.join(BASE_DIR, "config.json")
+    if os.path.exists(cfg_path):
+        cfg = json.load(open(cfg_path, encoding="utf-8"))
+    pen = cfg.get("score_penalties", {})
+    pen_amount = float(pen.get("amount", 0))
+    pen_names = [s.lower() for s in pen.get("names", [])]
+    penalized = []
+
     for w in wallets:
-        w["score"] = scores.get(w["address"], NO_DATA_SCORE)
+        base = MIN_SCORE if w["address"] not in scores else scores[w["address"]]
+        name_l = (w.get("rename") or "").lower()
+        if pen_amount and any(p in name_l for p in pen_names):
+            base = max(MIN_SCORE, round(base - pen_amount, 3))
+            penalized.append(w.get("rename"))
+        w["score"] = base
+
+    if penalized:
+        print(f"\nPenalizados -{pen_amount}: {', '.join(sorted(set(penalized)))}")
 
     json.dump(wallets, open(WALLETS_PATH, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     os.makedirs(os.path.dirname(SNAPSHOT_PATH), exist_ok=True)

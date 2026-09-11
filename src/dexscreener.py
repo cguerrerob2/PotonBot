@@ -11,6 +11,30 @@ EXPLORERS = {
     "BSC": "https://bscscan.com/token/",
 }
 
+WSOL_MINT = "So11111111111111111111111111111111111111112"
+_sol_price_cache = {"price": None, "ts": 0.0}
+
+
+async def fetch_sol_price() -> float | None:
+    """Precio actual de SOL en USD via Dexscreener (cache 5 min)."""
+    now = time.time()
+    if _sol_price_cache["price"] and now - _sol_price_cache["ts"] < 300:
+        return _sol_price_cache["price"]
+    try:
+        url = f"https://api.dexscreener.com/latest/dex/tokens/{WSOL_MINT}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=8)) as resp:
+                if resp.status != 200:
+                    return _sol_price_cache["price"]
+                data = await resp.json()
+        pairs = data.get("pairs") or []
+        best = max(pairs, key=lambda p: (p.get("liquidity") or {}).get("usd") or 0)
+        price = float(best.get("priceUsd"))
+        _sol_price_cache.update({"price": price, "ts": now})
+        return price
+    except Exception:
+        return _sol_price_cache["price"]
+
 
 async def fetch_token_info(chain: str, token: str, timeout: int = 8) -> dict:
     """Datos completos del token desde Dexscreener (par con mas liquidez de su chain)."""

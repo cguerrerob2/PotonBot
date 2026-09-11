@@ -129,25 +129,46 @@ class PotonBot:
         if pump.get("creator"):
             lines.append(f"🧑‍💻 DEV: `{pump['creator']}`")
 
+        # --- USD comprado por wallet (SOL: exacto via SOL gastado; EVM: amount x precio) ---
+        sol_price = extra.get("sol_price")
+        token_price = info.get("price_usd")
+        total_usd = 0.0
+        usd_of = {}
+        for b in buys:
+            usd = None
+            if chain == "SOL" and b.get("sol_spent") and sol_price:
+                usd = float(b["sol_spent"]) * float(sol_price)
+            elif token_price and b.get("amount"):
+                try:
+                    usd = float(b["amount"]) * float(token_price)
+                except (TypeError, ValueError):
+                    usd = None
+            usd_of[b["wallet"]] = usd
+            if usd:
+                total_usd += usd
+        if total_usd > 0:
+            lines.append(f"💰 Total aped: **{fmt_usd(total_usd)}**")
+
         embed.description = "\n".join(lines)
 
-        # --- Your wallets in (con score PnL) ---
+        # --- Your wallets in (score + USD comprado) ---
         wl = []
         for b in buys:
             emoji = (b.get("emoji") or "").strip()
             label = f"{emoji} **{b['name']}**" if emoji else f"**{b['name']}**"
-            amt = fmt_amount(b.get("amount"))
             sc = float(b.get("score", 0.3))
             star = "⭐" if sc >= 0.9 else ""
+            usd = usd_of.get(b["wallet"])
+            spent = f"**${usd:,.0f}**" if usd is not None else f"`{fmt_amount(b.get('amount'))}`"
             txh = b.get("tx_hash") or ""
             if chain == "SOL" and txh:
-                wl.append(f"{label} `{sc:.2f}`{star} — `{amt}` ([tx](https://solscan.io/tx/{txh}))")
+                wl.append(f"{label} `{sc:.2f}`{star} — {spent} ([tx](https://solscan.io/tx/{txh}))")
             elif txh:
                 exp_tx = {"ETH": "https://etherscan.io/tx/", "BASE": "https://basescan.org/tx/",
                           "BSC": "https://bscscan.com/tx/"}.get(chain, "")
-                wl.append(f"{label} `{sc:.2f}`{star} — `{amt}` ([tx]({exp_tx}{txh}))")
+                wl.append(f"{label} `{sc:.2f}`{star} — {spent} ([tx]({exp_tx}{txh}))")
             else:
-                wl.append(f"{label} `{sc:.2f}`{star} — `{amt}`")
+                wl.append(f"{label} `{sc:.2f}`{star} — {spent}")
         wallets_txt = "\n".join(wl)
         if len(wallets_txt) > 1000:
             wallets_txt = wallets_txt[:1000] + "\n..."

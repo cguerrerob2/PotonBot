@@ -2,6 +2,10 @@
   "threshold": 5,
   "min_wallets_score": 2,
   "score_threshold": 1.76,
+  "score_penalties": {
+    "amount": 0.6,
+    "names": ["superman", "martinshkreli", "vibed dev", "bwam", "devboost", "limdev", "fartdev", "kreo dev", "bundler", "boost", "pump app"]
+  },
   "window_minutes": 30,
   "alert_cooldown_minutes": 10,
   "realert_extra_wallets": 2,

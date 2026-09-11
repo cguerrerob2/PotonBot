@@ -66,7 +66,7 @@ class PotonBot:
             + (f" and **{n_evm}** EVM wallets (ETH/BASE/BSC)" if n_evm else "")
             + f".\nAlert when **{threshold}+** wallets ape the same coin within **{window_min} min**,"
             + f" or **2+** smart wallets with combined score ≥ **1.76** 🧠"
-            + f"\nAlerts ping: <@{self.ping_user_id}>"
+            + f"\nAlerts ping: **@everyone**"
         )
         if self.call_cfg.get("enabled"):
             msg += f"\n📞 Call-tracking ON in <#{self.call_cfg.get('channel_id')}> for {len(self.call_cfg.get('tracked_user_ids', []))} hunters."

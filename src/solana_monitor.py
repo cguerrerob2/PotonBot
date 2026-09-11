@@ -201,16 +201,17 @@ class SolanaMonitor:
                 continue
             for mint, amount in self._extract_buys(tx, w["address"]).items():
                 self.buys_detected += 1
-                count = await self.tracker.add_buy("SOL", mint, w["address"], {
+                count, score_sum = await self.tracker.add_buy("SOL", mint, w["address"], {
                     "name": w["rename"],
                     "emoji": w.get("emoji", ""),
                     "wallet": w["address"],
                     "amount": amount,
                     "symbol": "",
                     "tx_hash": sig,
+                    "score": w.get("score", 0.3),
                 })
                 n = abs(count)
-                log(f"{w.get('emoji','')} {w['rename']} bought {mint[:8]}... ({n}/{self.tracker.threshold} wallets in window)")
+                log(f"{w.get('emoji','')} {w['rename']} (score {w.get('score', 0.3):.2f}) bought {mint[:8]}... ({n} wallets, combined score {score_sum:.2f})")
 
         self._maybe_log_sweep()
 

@@ -1,0 +1,1407 @@
+{
+ "612Gq5xC8aBWzSrUPuVLoh93YtqbNEkdY1GhSJo7hXbc": {
+  "name": "pow 3?",
+  "pnl_sol": 138.815,
+  "swaps": 44,
+  "win_txs": 34,
+  "chain": "SOL"
+ },
+ "DK2x5KSAfC1rSFEByis8YNrF1Rde22bQF65BNaomLjdd": {
+  "name": "Itai 3",
+  "pnl_sol": 0.4,
+  "swaps": 56,
+  "win_txs": 50,
+  "chain": "SOL"
+ },
+ "47Cd6MkLRzhyzM6eNjvEBH3neNjkGmkYNM8z3sTujhjT": {
+  "name": "Itai 2",
+  "pnl_sol": -7.173,
+  "swaps": 64,
+  "win_txs": 25,
+  "chain": "SOL"
+ },
+ "286CHN57Km41GsAnDv866WKd6YB6HPSjFgF4rGDJTRLf": {
+  "name": "Itai",
+  "pnl_sol": -68.868,
+  "swaps": 24,
+  "win_txs": 21,
+  "chain": "SOL"
+ },
+ "HncgWUq96qZJjCAzyo8wnR3AAavBTTKHVFssZSJnGHSy": {
+  "name": "Rowdy 5",
+  "pnl_sol": 29.66,
+  "swaps": 65,
+  "win_txs": 55,
+  "chain": "SOL"
+ },
+ "AchmGUQw1cqNpSktHUaBW4b3PPBGEnHvVU39rPBdGB4L": {
+  "name": "Rowdy 4",
+  "pnl_sol": 29.256,
+  "swaps": 65,
+  "win_txs": 55,
+  "chain": "SOL"
+ },
+ "FEYNA4mpkB9zVRV8KH3TosXtSDnVqz3qNVRfnLJ2cLtW": {
+  "name": "Rowdy 3",
+  "pnl_sol": 27.205,
+  "swaps": 65,
+  "win_txs": 55,
+  "chain": "SOL"
+ },
+ "2GJyc8ag6Wn1Xm9uqT8ZhwjeE3JNTmigSBFgiTif48BQ": {
+  "name": "Rowdy 2",
+  "pnl_sol": 29.851,
+  "swaps": 65,
+  "win_txs": 55,
+  "chain": "SOL"
+ },
+ "9CNyLECt2j8tnDhqxtjYk5HUhZ2b8Nwnyb7sfYN7vND2": {
+  "name": "rasmr Fomo",
+  "pnl_sol": -0.037,
+  "swaps": 47,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "5UDfPwF3TuUojiWrQpvHcQS4Zi8s6KRiUgYNVWrjP6G8": {
+  "name": "Vibed 25",
+  "pnl_sol": -38.008,
+  "swaps": 60,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "7snAWVwQPWGP2QWUa7KWQEYS7RWcip58tuA2J9htfebo": {
+  "name": "Vibed 24",
+  "pnl_sol": -35.726,
+  "swaps": 65,
+  "win_txs": 15,
+  "chain": "SOL"
+ },
+ "AMt18WrMo3t1Eb58k1KnXCS1x1MiPMXZbfG5hM5mHwTb": {
+  "name": "Vibed 23",
+  "pnl_sol": -36.08,
+  "swaps": 67,
+  "win_txs": 15,
+  "chain": "SOL"
+ },
+ "GUjYXh4aR9tDJ1yU1gsa91LtivS5t84CZF3mP5SBkKhz": {
+  "name": "Nyhrox 2",
+  "pnl_sol": 0.0,
+  "swaps": 1,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "4UwK5AE6Djdf3MfwtPGE8pFYD47MhU9fiStDVmSHJVMB": {
+  "name": "Cottage",
+  "pnl_sol": -31.99,
+  "swaps": 31,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "FYxZPaTsx3LyA6QsfaqhPZJAqvtkoHNjZGj4geKerXc9": {
+  "name": "Lunar 5?",
+  "pnl_sol": -9.625,
+  "swaps": 36,
+  "win_txs": 17,
+  "chain": "SOL"
+ },
+ "GqCmmPWHnTiSG4xpwWeKZE6FGUGJiQupQVBPJ6KpYjG4": {
+  "name": "Lunar 4?",
+  "pnl_sol": -11.078,
+  "swaps": 39,
+  "win_txs": 19,
+  "chain": "SOL"
+ },
+ "5t9xBNuDdGTGpjaPTx6hKd7sdRJbvtKS8Mhq6qVbo8Qz": {
+  "name": "Smokez",
+  "pnl_sol": -810.585,
+  "swaps": 49,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "BruscGr8LcDM3Kp89EW3FhEfL6YjkRTAHXcLu3SzTxEc": {
+  "name": "Cented 9",
+  "pnl_sol": 0.002,
+  "swaps": 11,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "4qnxHNxkNNzvuTnZhSbH8LLJsQUmbSCSPp2opqibfxCD": {
+  "name": "Cented 8",
+  "pnl_sol": 56.746,
+  "swaps": 21,
+  "win_txs": 14,
+  "chain": "SOL"
+ },
+ "GmuxLFLkXYA5pK9QofuapjWgjg2QYC6VFYyY6rj7DrjQ": {
+  "name": "Cented 7",
+  "pnl_sol": -0.055,
+  "swaps": 11,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "5MztePcdvyzJr4Dd1Wj15scXEeddst1sMp759aNWf7gm": {
+  "name": "TradingAxe",
+  "pnl_sol": 73.065,
+  "swaps": 27,
+  "win_txs": 10,
+  "chain": "SOL"
+ },
+ "9GPBhWRn5Rdfja2y1aqudcAKD36yeJur497wrqYWCVQX": {
+  "name": "CrypA2",
+  "pnl_sol": -4.073,
+  "swaps": 74,
+  "win_txs": 17,
+  "chain": "SOL"
+ },
+ "BD3u9uWVBZ9Q7ENVhxP4xUk2ciygsnfkNqqAWbiakTdv": {
+  "name": "Ethan",
+  "pnl_sol": -47.802,
+  "swaps": 83,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "At78rGShVWnZDNBkV76McKi5VGyEWcFGF5hhm9KbwhTV": {
+  "name": "Scharo",
+  "pnl_sol": 82.445,
+  "swaps": 23,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "5fPcHmdZC1qpNLWSEZMx2Hpxai2mFrm4CnPvU9yJWVoM": {
+  "name": "SpoofAlon1",
+  "pnl_sol": -0.199,
+  "swaps": 42,
+  "win_txs": 17,
+  "chain": "SOL"
+ },
+ "_overrides": {},
+ "_meta": {
+  "updated": "2026-09-10 22:09:35",
+  "swaps_per_wallet": 100
+ },
+ "GAiioE1VdxEuAduLvJvaPeDQG2JQgupfnhVAG4J2FqK4": {
+  "name": "SpoofAlon2",
+  "pnl_sol": 31.903,
+  "swaps": 86,
+  "win_txs": 16,
+  "chain": "SOL"
+ },
+ "FQqe7UPdWcwxcEoS1v5PnRq1cXGdXcCsxBm14XWhS7Zf": {
+  "name": "favel",
+  "pnl_sol": -20.065,
+  "swaps": 48,
+  "win_txs": 24,
+  "chain": "SOL"
+ },
+ "87rRdssFiTJKY4MGARa4G5vQ31hmR7MxSmhzeaJ5AAxJ": {
+  "name": "Dior100x",
+  "pnl_sol": 22.199,
+  "swaps": 36,
+  "win_txs": 15,
+  "chain": "SOL"
+ },
+ "F5XvCe4233m6mHRbkkq2ZsFvqrPAnRrDBExeQy2fwagQ": {
+  "name": "Vibed Dev",
+  "pnl_sol": -0.871,
+  "swaps": 89,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "BMgsHTvcasRVtuevHJh8t6Vf5dmcWkDLAx6gSAQ3dsYm": {
+  "name": "DeepWhel Fomo",
+  "pnl_sol": -0.002,
+  "swaps": 39,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "Fm5CWGZ871HDnGvGY7HH6DdtbvcCyADNQiFBfWpWBRG4": {
+  "name": "Kreo 4",
+  "pnl_sol": -16.296,
+  "swaps": 80,
+  "win_txs": 21,
+  "chain": "SOL"
+ },
+ "6ejT3iUNdR6aCyAKS76Y6NKHaupLZNeYtae9XeQaJNm8": {
+  "name": "Kreo 3?",
+  "pnl_sol": -21.275,
+  "swaps": 49,
+  "win_txs": 10,
+  "chain": "SOL"
+ },
+ "93batKjpF2gN9zM3yPXjCaG8Va5HHwhk1kgnkbwDqzf4": {
+  "name": "four3two1 3",
+  "pnl_sol": 6.969,
+  "swaps": 69,
+  "win_txs": 22,
+  "chain": "SOL"
+ },
+ "EguKEPPpE22fTcNWrKJTRKVEbwRDcN2JT8t6yTdaE5Ps": {
+  "name": "jpeg 7",
+  "pnl_sol": 21.244,
+  "swaps": 70,
+  "win_txs": 14,
+  "chain": "SOL"
+ },
+ "9vYdjR8j11PbWbN1mmP9GLPPVjdcEwn4C7tYmjvfuDge": {
+  "name": "jpeg 4",
+  "pnl_sol": -33.397,
+  "swaps": 70,
+  "win_txs": 10,
+  "chain": "SOL"
+ },
+ "GRPn81aRUT6xHvn6Xbi9u3iHavJ1x5gNZ9VspLcN7H2o": {
+  "name": "four3two1 ?",
+  "pnl_sol": -21.724,
+  "swaps": 78,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "Cw2mXFxYaACuPaTXivKbmybJ1oPR9wEYkRpkCRirmL62": {
+  "name": "four3two1 ?",
+  "pnl_sol": 39.341,
+  "swaps": 86,
+  "win_txs": 46,
+  "chain": "SOL"
+ },
+ "GwKjmdpK28BNi1TJ3hfGU2qH9Scg7D3VCMV3kLfeUrzA": {
+  "name": "Mario64 Team?",
+  "pnl_sol": -18.641,
+  "swaps": 67,
+  "win_txs": 20,
+  "chain": "SOL"
+ },
+ "2w85VLX4W4qm8SPS7UJ35XwKZuLiNEeJr9MGzArKXkBF": {
+  "name": "Mario64 Team?",
+  "pnl_sol": -65.802,
+  "swaps": 44,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "3tSe5BDPuV1PKaeQEUJUpTA68omcSUzRC9RjWHf1dJkj": {
+  "name": "Mario64 Team?",
+  "pnl_sol": 23.395,
+  "swaps": 34,
+  "win_txs": 19,
+  "chain": "SOL"
+ },
+ "3VCx8WYeP6dmWaUgChyvNEqTqaCn9bNDsYBgBVbHTZ68": {
+  "name": "Upnext Troupe",
+  "pnl_sol": 0.813,
+  "swaps": 24,
+  "win_txs": 2,
+  "chain": "SOL"
+ },
+ "4ZyEHme9v9SkgVu55e5QjQSZdmQyKDsoK2PJELy7386T": {
+  "name": "OnlyLJC",
+  "pnl_sol": 191.124,
+  "swaps": 47,
+  "win_txs": 39,
+  "chain": "SOL"
+ },
+ "rNAUS5wm8CqFodvUaU1qqiBJ594uVn3heCLtTnHrjpw": {
+  "name": "Vibed 18?",
+  "pnl_sol": -51.425,
+  "swaps": 93,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "DRBkt7ouj3ux2MZVNkE2W4joRaXDVmdfrgiofhPkuCVA": {
+  "name": "four3two1 ?",
+  "pnl_sol": -92.224,
+  "swaps": 92,
+  "win_txs": 8,
+  "chain": "SOL"
+ },
+ "B56F5DGbQPkTzo5A4QBvaDEtFTSTDg1EU3T8EyZCuCGC": {
+  "name": "four3two1 ?",
+  "pnl_sol": -18.409,
+  "swaps": 89,
+  "win_txs": 31,
+  "chain": "SOL"
+ },
+ "BV6uDWSbkewGAKL9pRHC1ji73E8iAH726H44oWr2ezx6": {
+  "name": "four3two1 ?",
+  "pnl_sol": -31.52,
+  "swaps": 88,
+  "win_txs": 27,
+  "chain": "SOL"
+ },
+ "DSQeAaPEdWsqAYBG6wmQE3oxoCGTUVb8Xu2ouRmzixa6": {
+  "name": "four3two1 Main",
+  "pnl_sol": 14.01,
+  "swaps": 59,
+  "win_txs": 8,
+  "chain": "SOL"
+ },
+ "E9LBAGpz54DBdgBQTbCqzbWY9iyygEvDpAShWNMK9rD3": {
+  "name": "Vibed 21",
+  "pnl_sol": 191.948,
+  "swaps": 61,
+  "win_txs": 38,
+  "chain": "SOL"
+ },
+ "CPvD1WhtFTEf6LvKu64wMitTtKLM16g33BAYEDd3p69h": {
+  "name": "Vibed 20",
+  "pnl_sol": 131.633,
+  "swaps": 54,
+  "win_txs": 30,
+  "chain": "SOL"
+ },
+ "9sS1mbEXyFLRBGSExYPxjtCvPesR22uUrxbyquNAFneH": {
+  "name": "Crime3?",
+  "pnl_sol": -14.024,
+  "swaps": 88,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "4w8YxifVNAbsrw3bAzzUPWagbLNrx2bx1ityuuvF1aFr": {
+  "name": "Crime2?",
+  "pnl_sol": -5.686,
+  "swaps": 61,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "H31vEBxSJk1nQdUN11qZgZyhScyShhscKhvhZZU3dQoU": {
+  "name": "Crime1?",
+  "pnl_sol": 0.0,
+  "swaps": 0,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "F6seSE7f1rWKBcGzKEteWJqVe7Lz18L9E99i2Lk8jspp": {
+  "name": "jpeg 10",
+  "pnl_sol": -10.783,
+  "swaps": 77,
+  "win_txs": 21,
+  "chain": "SOL"
+ },
+ "Fcy2iTi78YnCSE78jm1oUqpJ74NNxkURkDR64kuQYX1o": {
+  "name": "jpeg 9",
+  "pnl_sol": -7.127,
+  "swaps": 50,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "2rNEQcRAyGHScmm54AmxYYMvKYm2udGR5oN9PrYBY6E9": {
+  "name": "jpeg 8",
+  "pnl_sol": -12.698,
+  "swaps": 85,
+  "win_txs": 19,
+  "chain": "SOL"
+ },
+ "71B2FC3xmwQkj2W3oJqESTvBiVdPYG68UWxX4dMu9YKb": {
+  "name": "Lunar 6?",
+  "pnl_sol": 202.742,
+  "swaps": 51,
+  "win_txs": 32,
+  "chain": "SOL"
+ },
+ "Had6pusVmdPaXzoWCEAQJQ4dMttPx7YCvii1Udd4nnPT": {
+  "name": "jpeg",
+  "pnl_sol": -50.164,
+  "swaps": 98,
+  "win_txs": 49,
+  "chain": "SOL"
+ },
+ "FtyoASUn8dt3KCFTGxgKTor7spuuFjtiGrgjXJGqnRgV": {
+  "name": "jpeg 6",
+  "pnl_sol": -23.29,
+  "swaps": 70,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "3f58DF1SFC9FLe3T1PzFuQkudaqY76XD64X4oSmvPfK1": {
+  "name": "jpeg 5",
+  "pnl_sol": -22.718,
+  "swaps": 70,
+  "win_txs": 14,
+  "chain": "SOL"
+ },
+ "catK9v3gp2dd32bkUxDEst4BarwDoCL3pkFfVoVjcgi": {
+  "name": "Rowdy 2?",
+  "pnl_sol": -44.646,
+  "swaps": 37,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "D9tPQeij7vSTZwkxzxZibso4GFuRW8aBMpCg5QhCSfVL": {
+  "name": "himgajria",
+  "pnl_sol": -0.001,
+  "swaps": 7,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "DnkLKQtYXi4LHRhKTnWeExNfSE2LZyadAiUnQVdHnBNg": {
+  "name": "Vibed 17?",
+  "pnl_sol": -87.979,
+  "swaps": 92,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "AmfPwSWpiYUfD4sGzQfhfAotsF7wH6Z9WwfLjowjCKUz": {
+  "name": "AlxCooks 3",
+  "pnl_sol": -0.024,
+  "swaps": 46,
+  "win_txs": 20,
+  "chain": "SOL"
+ },
+ "H7HAnido4FYiGmhn6wXh7e3AVZmBQjPMj8rf3mr2F2Zh": {
+  "name": "AlxCooks 2",
+  "pnl_sol": -13.085,
+  "swaps": 32,
+  "win_txs": 25,
+  "chain": "SOL"
+ },
+ "89HbgWduLwoxcofWpmn1EiF9wEdpgkNDEyPjzZ72mkDi": {
+  "name": "AlxCooks",
+  "pnl_sol": -122.592,
+  "swaps": 32,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "AKyWqDEp8koAmnvQv1N1bHzTA6CA38WeKBwFV4x9aprh": {
+  "name": "Lunar B3",
+  "pnl_sol": -30.546,
+  "swaps": 63,
+  "win_txs": 21,
+  "chain": "SOL"
+ },
+ "EjAHxa6nfmmetEvYMwbNy8tSEctiyo55yKTUF9yzgr2r": {
+  "name": "Lunar B2?",
+  "pnl_sol": -29.592,
+  "swaps": 60,
+  "win_txs": 19,
+  "chain": "SOL"
+ },
+ "CmzeDwSUePjV8iqAuAk7BW8PQUyZCm8Y2vW9jEegBnTz": {
+  "name": "Lunar B1",
+  "pnl_sol": -34.774,
+  "swaps": 63,
+  "win_txs": 20,
+  "chain": "SOL"
+ },
+ "7MfJwQQX9HBpye5SE5dSoY2Jb9J4jNiALDGgQxx2sYZ5": {
+  "name": "Marcello",
+  "pnl_sol": 10.231,
+  "swaps": 39,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "FuzdmLUUngRPHrgEYt35L5n7cYmh7WLznisCp31abgB4": {
+  "name": "Momo Fomo",
+  "pnl_sol": -0.03,
+  "swaps": 45,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "J5ExSFQ5muDWxgDudaH4MPD2cye9zkL7HRhzP774YWLc": {
+  "name": "Farokh",
+  "pnl_sol": -127.978,
+  "swaps": 24,
+  "win_txs": 6,
+  "chain": "SOL"
+ },
+ "8d3VVMug7R35K155s16GU7cTX9zyMggd5wW2r1qcGJpG": {
+  "name": "Pump App",
+  "pnl_sol": -0.774,
+  "swaps": 44,
+  "win_txs": 22,
+  "chain": "SOL"
+ },
+ "CZu4Do9SVigr9bFzRRpSuivmtpdzEfGQy7q8x9KaMBKJ": {
+  "name": "0xSun",
+  "pnl_sol": 48.377,
+  "swaps": 30,
+  "win_txs": 8,
+  "chain": "SOL"
+ },
+ "ARW9NzhpuBVYaYBZo6fW1P1U6LTNwUY6jfi7XC37Sa97": {
+  "name": "Waddles",
+  "pnl_sol": -0.208,
+  "swaps": 65,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "GhJ4DhSKiewqgV4W34BZPDptdiV3o15xAG4cc6VmFjUz": {
+  "name": "four3two1",
+  "pnl_sol": 9.736,
+  "swaps": 49,
+  "win_txs": 25,
+  "chain": "SOL"
+ },
+ "q1x4ZBM4suUaMB8BjsHpVH5dwyUtEnRY8QB8kzvCQ9z": {
+  "name": "four3two1 2",
+  "pnl_sol": -19.332,
+  "swaps": 21,
+  "win_txs": 8,
+  "chain": "SOL"
+ },
+ "4cXnf2z85UiZ5cyKsPMEULq1yufAtpkatmX4j4DBZqj2": {
+  "name": "WaiterG",
+  "pnl_sol": -61.623,
+  "swaps": 29,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "98bTNSZo7eNyYASDkeywE3BuhoHXEueWScEKVkwBdG6H": {
+  "name": "Killua",
+  "pnl_sol": 3.564,
+  "swaps": 26,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "7eNRALuXYUJkUWTvRj5tcB7tcT43kmT5SNdkfy9fKTto": {
+  "name": "pow",
+  "pnl_sol": 174.145,
+  "swaps": 49,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "6DQAGJT7VZPVBsuG4kn3AvpyHCEi7B2RFFvMZdbqQqqP": {
+  "name": "Cupsey 5",
+  "pnl_sol": -0.022,
+  "swaps": 51,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "AkK5BtfBhj3cJi1f9LVXodbBLxRiePqffm5uiQYpDYQr": {
+  "name": "martinshkreli",
+  "pnl_sol": -50.652,
+  "swaps": 91,
+  "win_txs": 54,
+  "chain": "SOL"
+ },
+ "ABWfrMhsc94h9JHcCNBy94ZDFxcNypmUwZCPMpP92552": {
+  "name": "Omar 3",
+  "pnl_sol": -0.011,
+  "swaps": 51,
+  "win_txs": 10,
+  "chain": "SOL"
+ },
+ "5m1GCXJqvYv9wC5qf8njetG39pBwCSTb11XwY3sQkW7a": {
+  "name": "Duval 16",
+  "pnl_sol": 1.547,
+  "swaps": 4,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "6QGRJVuAGg9AGLLSf5HvFd7KCYV1Hfb43xkGjo8eHcYx": {
+  "name": "Duval 17",
+  "pnl_sol": 0.0,
+  "swaps": 2,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "ENGkTtUanFtqD5avHk5jJARwZNz5DX1AZ8TGQqASw8CT": {
+  "name": "Duval 18",
+  "pnl_sol": 0.0,
+  "swaps": 1,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "HSeCG7T2KCTuVAARGXZuxBNZg6pas1EdJdjn7Xyy1ENB": {
+  "name": "Duval 19",
+  "pnl_sol": 1.616,
+  "swaps": 11,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "4bNbuHvEzZKZsrFzLkky4yoQU7UZXuC2WQ5BRkqZuCjz": {
+  "name": "Zinc2?",
+  "pnl_sol": -27.335,
+  "swaps": 87,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "8KQriAKQrWJY2CPMLGmxwMz2sEhKjq6hEd3Rwx1B5Zu6": {
+  "name": "SideCabal2",
+  "pnl_sol": -33.554,
+  "swaps": 52,
+  "win_txs": 14,
+  "chain": "SOL"
+ },
+ "32pKktjeFQMN9UeEQr2y2EQbX72Nor4jzDPRfGddk4kY": {
+  "name": "SideCabal1",
+  "pnl_sol": -80.013,
+  "swaps": 6,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "AAHWz3Sj99soWay215ENXbgvw7TLo92omJrnUy7uCGKG": {
+  "name": "Orangie 2",
+  "pnl_sol": 16.194,
+  "swaps": 36,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "HmBmSYwYEgEZuBUYuDs9xofyqBAkw4ywugB1d7R7sTGh": {
+  "name": "TobXG",
+  "pnl_sol": -5.369,
+  "swaps": 60,
+  "win_txs": 16,
+  "chain": "SOL"
+ },
+ "83b2LMf12aLec92kur3duRA8VvUkLaXUtML31aCcZNCM": {
+  "name": "Orangie",
+  "pnl_sol": 0.827,
+  "swaps": 24,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "EgTf4LE9MxqVSjPLWppGg77wjP3aYinpczhJM44PhJYH": {
+  "name": "Uxento 4",
+  "pnl_sol": -11.251,
+  "swaps": 35,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "JB7kzeLT73TwPfUA3M8nHRtFsV46sjUgwSBuN1a3MtXz": {
+  "name": "Uxento 3",
+  "pnl_sol": -8.178,
+  "swaps": 36,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "2hUHQxsKC7RrTFfCnf7fXj5RDUszqTPHkAidLYTZrtA6": {
+  "name": "Uxento 2",
+  "pnl_sol": -21.899,
+  "swaps": 38,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "7vQ3cxHc7s3Z6WmUqbaUrELiMeus8ytiNvmYHgND5DXR": {
+  "name": "Uxento 1",
+  "pnl_sol": 19.639,
+  "swaps": 41,
+  "win_txs": 12,
+  "chain": "SOL"
+ },
+ "FyC2KAQNev2dGuEafoeJmHrcfkdgRvwTbnMVBoXfPDPB": {
+  "name": "Waddles 15",
+  "pnl_sol": 21.143,
+  "swaps": 21,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "hEdBa1RU9ogU56pocVQEFmmwUFS8LK9CVftecuC12EE": {
+  "name": "Waddles 14",
+  "pnl_sol": 22.489,
+  "swaps": 33,
+  "win_txs": 12,
+  "chain": "SOL"
+ },
+ "4Tf8hNjzyDQpbQ2CrJHqL9kC6HnDaN9pg4nEzdgHxVaG": {
+  "name": "Waddles 13",
+  "pnl_sol": 20.675,
+  "swaps": 46,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "7Nt5HFpWzDfcvQLRmdRPkvDdq68n821wP1AGaWyqiAL6": {
+  "name": "Waddles 12",
+  "pnl_sol": -2.48,
+  "swaps": 17,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "C6macjVoEMRtfpupFP4cQtCr49Uws5UFcxLVrGxAKMdr": {
+  "name": "igetrugged",
+  "pnl_sol": -2.337,
+  "swaps": 35,
+  "win_txs": 9,
+  "chain": "SOL"
+ },
+ "7Sr5FKdYmHQq2kcXisHMMBU6jbnaKqFwiC7dAtFU7Ux4": {
+  "name": "Jason 4",
+  "pnl_sol": -0.236,
+  "swaps": 14,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "4kQcRBfWoFugrHUe4pNZtQBvLzNGhmbEAd9EvUHT9mUv": {
+  "name": "Jason 3",
+  "pnl_sol": 0.257,
+  "swaps": 36,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "FBLbncRFYoFXzQKz6Yt5LxC8moTgRCxdYsX2mgtk6QGH": {
+  "name": "Jason 2?",
+  "pnl_sol": -27.518,
+  "swaps": 54,
+  "win_txs": 3,
+  "chain": "SOL"
+ },
+ "CXZT2abrKxmzgJJ2JJcTGbXBxWypQyg8oxdXMi9r448W": {
+  "name": "jpeg 3",
+  "pnl_sol": 25.952,
+  "swaps": 74,
+  "win_txs": 28,
+  "chain": "SOL"
+ },
+ "7jVVMxmshuxwNKWvVHbAkYrcfoMX4SBDLn9p98hGJUGm": {
+  "name": "jpeg 2",
+  "pnl_sol": 42.637,
+  "swaps": 59,
+  "win_txs": 19,
+  "chain": "SOL"
+ },
+ "9oUqVr68x7k5Ey72QZTSES7Eo2MSiKBLZsKPfCATaUUD": {
+  "name": "jpeg",
+  "pnl_sol": 46.61,
+  "swaps": 71,
+  "win_txs": 20,
+  "chain": "SOL"
+ },
+ "9MsCdHnAb5PiHBCNkPXfvLYnNMppgdKknNr2RoYUdpVc": {
+  "name": "SonarTroupe",
+  "pnl_sol": -0.022,
+  "swaps": 22,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "DPUq1bDoAzHoapLaFAhH7Z3n8w8GqD4a1BwNCyivf5jc": {
+  "name": "asta",
+  "pnl_sol": 146.933,
+  "swaps": 21,
+  "win_txs": 3,
+  "chain": "SOL"
+ },
+ "33vFB2rtG9FDpJReNaJrBF4RZgri5HTVo5gSxP1XfVCr": {
+  "name": "insentos",
+  "pnl_sol": 0.61,
+  "swaps": 28,
+  "win_txs": 2,
+  "chain": "SOL"
+ },
+ "96UN2r4r1DCpB2r1uNb5kbThEoZP5Ru8HS71VJFSkjRB": {
+  "name": "FourGrandFNF",
+  "pnl_sol": 14.084,
+  "swaps": 44,
+  "win_txs": 8,
+  "chain": "SOL"
+ },
+ "4DTFHCWPerWSX9WtdnMyKdSyeSdVihaCZgLk4uBW1Jcg": {
+  "name": "LuvGrandFNF",
+  "pnl_sol": 16.102,
+  "swaps": 31,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "CGrbzqgSje9DnJwD17xPDba5AXJE6x81Ys6btPfdLHA5": {
+  "name": "ChunGrandFNF",
+  "pnl_sol": 1.423,
+  "swaps": 23,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF": {
+  "name": "Unipcs Fomo",
+  "pnl_sol": 0.0,
+  "swaps": 27,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "8f39XhhZoRD8sYb6K5K9N7iSHXkL7BDmFFQNDF3TtsEr": {
+  "name": "Qwerty",
+  "pnl_sol": -0.006,
+  "swaps": 36,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "9GKato6WXjHStqbmiN9HtxUzNJaPd7DTzKB3srKNfAxU": {
+  "name": "CrypA1",
+  "pnl_sol": -33.172,
+  "swaps": 62,
+  "win_txs": 20,
+  "chain": "SOL"
+ },
+ "C9gQ31AQpEt6GxcHrD6gSjguvnVWNU17KRPRc1vV1LMS": {
+  "name": "Brox Fomo",
+  "pnl_sol": -0.009,
+  "swaps": 37,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "DAejzMs5cUeCCENNvapy9KWFwzwegh7LvcgNkZ6hnf1y": {
+  "name": "fmpumpguy",
+  "pnl_sol": 0.51,
+  "swaps": 32,
+  "win_txs": 2,
+  "chain": "SOL"
+ },
+ "46mzT8wXydUMe8J9RrKwovddW1QL5ayPQSr1RZyKdVbf": {
+  "name": "Vibed 13",
+  "pnl_sol": 1.607,
+  "swaps": 29,
+  "win_txs": 2,
+  "chain": "SOL"
+ },
+ "6bVJezr39LPgApUDLtpRE8JaodVNAY9CWV1G9p1th1c4": {
+  "name": "Vibed 15",
+  "pnl_sol": 0.0,
+  "swaps": 1,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "4KbAFxcePqSbLRZWizvo4Ce4KKTANBjmt7h22tYxxuht": {
+  "name": "Vibed 14",
+  "pnl_sol": 0.0,
+  "swaps": 1,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "8fHi5b7PB17Tf6gY8BRRR2k3voB2JsVxTbbDiWfZarXo": {
+  "name": "Derp 10?",
+  "pnl_sol": -6.839,
+  "swaps": 37,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "E2WFFdE4FnsvHfoCdT8Funjm6XknWenevV5cAYaxtqJe": {
+  "name": "yogurt 2",
+  "pnl_sol": 312.466,
+  "swaps": 23,
+  "win_txs": 20,
+  "chain": "SOL"
+ },
+ "GfXQesPe3Zuwg8JhAt6Cg8euJDTVx751enp9EQQmhzPH": {
+  "name": "spuno",
+  "pnl_sol": -41.528,
+  "swaps": 95,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "4BdKaxN8G6ka4GYtQQWk4G4dZRUTX2vQH9GcXdBREFUk": {
+  "name": "jijo",
+  "pnl_sol": 0.0,
+  "swaps": 5,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "HyYNVYmnFmi87NsQqWzLJhUTPBKQUfgfhdbBa554nMFF": {
+  "name": "FartDev",
+  "pnl_sol": -23.075,
+  "swaps": 46,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "5SvCHLjqNHujsxLdQLFUVU5wMKD3rSZZminJ6i1uf9in": {
+  "name": "Cented 6",
+  "pnl_sol": 40.714,
+  "swaps": 25,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "AbkZuhcvv5sM3pZbbqtHDxZWX6tcx7MbLfQj7CsmW9tY": {
+  "name": "Derp Fomo",
+  "pnl_sol": -0.04,
+  "swaps": 63,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "6Eegkyd2qNzxSzZz3PH3jiDyqL5HFcHdcsb9zfMzWHKB": {
+  "name": "Duval 4",
+  "pnl_sol": 0.0,
+  "swaps": 2,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "54JsrmPibTUiR51zs2RqKCmVopPRYM4ape4X8qkbUzfG": {
+  "name": "Duval 12",
+  "pnl_sol": 0.0,
+  "swaps": 0,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "DxM1hfY8FQ8dNGrucuJzhJcF8KRbjk8WBwrgKvQ9spPv": {
+  "name": "RC Fomo",
+  "pnl_sol": -0.023,
+  "swaps": 37,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "5hAgYC8TJCcEZV7LTXAzkTrm7YL29YXyQQJPCNrG84zM": {
+  "name": "Scheon",
+  "pnl_sol": 81.621,
+  "swaps": 38,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "D7xK1ZLz8KQNWN8aU1jbzNAuT5xwqgFrCUUYodVU4G42": {
+  "name": "Duval 2",
+  "pnl_sol": 0.0,
+  "swaps": 0,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "DKgvpfttzmJqZXdavDwTxwSVkajibjzJnN2FA99dyciK": {
+  "name": "Rowdy",
+  "pnl_sol": -1089.683,
+  "swaps": 46,
+  "win_txs": 22,
+  "chain": "SOL"
+ },
+ "CzU8MaRcwvwUoNkwJFLbvtFWJugcEXAhDDQqNFE4ybb7": {
+  "name": "Rowdy Fomo",
+  "pnl_sol": -0.024,
+  "swaps": 26,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "EiA5cHNbtwe66JFuAu6iVXZbt3amTzPg5Wexb9grNKN7": {
+  "name": "Troupe8?",
+  "pnl_sol": 0.445,
+  "swaps": 24,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "8p5YxvAsJ4dTCiZVcT8LS7hqYTLvfbCQqXHe8bDguaeX": {
+  "name": "TroupeC7",
+  "pnl_sol": 6.501,
+  "swaps": 39,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "FZGHSr8GerEkeSYnFFCvgNgTbgZ1GxnS8ivg3aMnQend": {
+  "name": "Duval 11",
+  "pnl_sol": 10.954,
+  "swaps": 71,
+  "win_txs": 25,
+  "chain": "SOL"
+ },
+ "7uyGRgoCRKfynPbB35kWQwEGz9pmRvUyNFunV939mXpN": {
+  "name": "Duval 10",
+  "pnl_sol": 0.73,
+  "swaps": 5,
+  "win_txs": 2,
+  "chain": "SOL"
+ },
+ "DuF1c72PMkPSQ1E1BrhpeFW4Z1krTwH6dziLAYnGqfxj": {
+  "name": "Duval 9",
+  "pnl_sol": -54.879,
+  "swaps": 75,
+  "win_txs": 23,
+  "chain": "SOL"
+ },
+ "2MvHnFB9oGjFeSErRq97gsDt6SCy38XhCmff5f4CxN1H": {
+  "name": "Duval 7",
+  "pnl_sol": -57.849,
+  "swaps": 67,
+  "win_txs": 14,
+  "chain": "SOL"
+ },
+ "DU1duJVh4VDY7qWsR6a5wskfsGgtNTvDbayr5o9seLJd": {
+  "name": "Duval 6",
+  "pnl_sol": 2.477,
+  "swaps": 73,
+  "win_txs": 3,
+  "chain": "SOL"
+ },
+ "Com59ujBXi12JHdG9WTN7tDUfd76T1hDn7f6d14GgLFT": {
+  "name": "Duval 5",
+  "pnl_sol": -31.438,
+  "swaps": 78,
+  "win_txs": 23,
+  "chain": "SOL"
+ },
+ "DeJNELTxXcBwEeQQB2GgnGodsJGv4u2whMm6t83cJxA5": {
+  "name": "Duval 8",
+  "pnl_sol": -7.212,
+  "swaps": 70,
+  "win_txs": 14,
+  "chain": "SOL"
+ },
+ "MkTbdmYeqNuDUVj11RgPy1hVxmVehVxVbr6WmPU2izr": {
+  "name": "Kreo 3",
+  "pnl_sol": 39.49,
+  "swaps": 76,
+  "win_txs": 26,
+  "chain": "SOL"
+ },
+ "9UgewxGU43jVWLNhZu49ft9Y9UfFqvFrcCfnnWJ9j57k": {
+  "name": "Kreo 2",
+  "pnl_sol": 22.499,
+  "swaps": 79,
+  "win_txs": 24,
+  "chain": "SOL"
+ },
+ "2sdLBhzuS1eaJRg2bdN3YVdW5y4ccKHthQozncoT6sdK": {
+  "name": "yogurt",
+  "pnl_sol": 0.277,
+  "swaps": 28,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "DkWzWsQT9ZThfkFfdZqzNT59dZMiJXp81oob8QBG9UcT": {
+  "name": "Duval 3",
+  "pnl_sol": 0.0,
+  "swaps": 3,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "CNudZYFgpbT26fidsiNrWfHeGTBMMeVWqruZXsEkcUPc": {
+  "name": "Gake Side",
+  "pnl_sol": 0.683,
+  "swaps": 56,
+  "win_txs": 21,
+  "chain": "SOL"
+ },
+ "BXNiM7pqt9Ld3b2Hc8iT3mA5bSwoe9CRrtkSUs15SLWN": {
+  "name": "Absol",
+  "pnl_sol": -29.062,
+  "swaps": 36,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "ETDaKRTkvmW5PDfrHkP56DmyyQ8JHLfLCaFmYu5P43tY": {
+  "name": "Cented 5",
+  "pnl_sol": 0.0,
+  "swaps": 16,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "4vw54BmAogeRV3vPKWyFet5yf8DTLcREzdSzx4rw9Ud9": {
+  "name": "Decu",
+  "pnl_sol": 0.945,
+  "swaps": 22,
+  "win_txs": 3,
+  "chain": "SOL"
+ },
+ "72PFafQnMdVrq7zXXiM58AHLdeffmR6n98fpSVBm6cFa": {
+  "name": "Bundler2",
+  "pnl_sol": -102.552,
+  "swaps": 36,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "FuP8dYQytaThMh9Fg2XNd1Z1eNHxMHW92kVUfWf3TnmD": {
+  "name": "mdudas",
+  "pnl_sol": -2.888,
+  "swaps": 21,
+  "win_txs": 11,
+  "chain": "SOL"
+ },
+ "5YRgrP3mjGzrzirYYN5HAQH19cTYREYwGxW6XRJQUzij": {
+  "name": "Slingoor",
+  "pnl_sol": -221.946,
+  "swaps": 25,
+  "win_txs": 9,
+  "chain": "SOL"
+ },
+ "CAPn1yH4oSywsxGU456jfgTrSSUidf9jgeAnHceNUJdw": {
+  "name": "cap",
+  "pnl_sol": -44.429,
+  "swaps": 31,
+  "win_txs": 15,
+  "chain": "SOL"
+ },
+ "J23qr98GjGJJqKq9CBEnyRhHbmkaVxtTJNNxKu597wsA": {
+  "name": "Gr3g",
+  "pnl_sol": -103.803,
+  "swaps": 32,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "Akw4YD37aNGFUPQXQytRJEJQExkh6eY4LZ36DfWx5jqD": {
+  "name": "devBoost2",
+  "pnl_sol": -41.664,
+  "swaps": 73,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "w3yshzd5KSTrvRPKXFKTvCQigDrkFcpqShwWxESC5dN": {
+  "name": "devBoost1",
+  "pnl_sol": 394.208,
+  "swaps": 62,
+  "win_txs": 58,
+  "chain": "SOL"
+ },
+ "HTVZVEQMBsNanubDPTs3CxDAEGNFQHJY8c1441iy2S5r": {
+  "name": "Boost",
+  "pnl_sol": 0.0,
+  "swaps": 0,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "65paNEG8m7mCVoASVF2KbRdU21aKXdASSB9G3NjCSQuE": {
+  "name": "Pullup",
+  "pnl_sol": -66.445,
+  "swaps": 25,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "7NAd2EpYGGeFofpyvgehSXhH5vg6Ry6VRMW2Y6jiqCu1": {
+  "name": "Cupsey 3",
+  "pnl_sol": -6.161,
+  "swaps": 11,
+  "win_txs": 3,
+  "chain": "SOL"
+ },
+ "6zMVSeukMUMKu5tDsECh4QMqrCRZqTbTvuawztFfwNti": {
+  "name": "Binkie",
+  "pnl_sol": 1.257,
+  "swaps": 35,
+  "win_txs": 2,
+  "chain": "SOL"
+ },
+ "C1on5JABbJPnMDUUEYJBDQ88z3D6xpVQoeBDAWX4jT2N": {
+  "name": "Troupe5?",
+  "pnl_sol": -140.746,
+  "swaps": 54,
+  "win_txs": 22,
+  "chain": "SOL"
+ },
+ "Huy7d4MxLtgZGvyqcMKm6R1DGfoX9rfKi6euxn6bJUoN": {
+  "name": "TroupeC3",
+  "pnl_sol": -104.469,
+  "swaps": 56,
+  "win_txs": 9,
+  "chain": "SOL"
+ },
+ "Bf4zji6S979QySiGNjPJ2VMZ5i2SRVtAzfx8QUBScJm6": {
+  "name": "TroupeC2",
+  "pnl_sol": 49.783,
+  "swaps": 40,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "6bFkJMwxMkiQcg2XFeq57otKiNEDnyeAwomEiCq9hpg6": {
+  "name": "TroupeC1",
+  "pnl_sol": 11.903,
+  "swaps": 45,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "9ixRpaSxyLZJjzHBpvZvFSx4xMhP6TB7AMjuufRkvnMT": {
+  "name": "TroupeC4",
+  "pnl_sol": -409.551,
+  "swaps": 66,
+  "win_txs": 8,
+  "chain": "SOL"
+ },
+ "BprdjjAzFLoS2gVJqUVR1pdJpwCacNK4kctLTiMmcdSh": {
+  "name": "Lunar 3",
+  "pnl_sol": -41.547,
+  "swaps": 25,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "ACTbvbNm5qTLuofNRPxFPMtHAAtdH1CtzhCZatYHy831": {
+  "name": "Jason",
+  "pnl_sol": 0.0,
+  "swaps": 3,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "498g1rVnFcnjBjpfw1xyqA1WvgQXUU8RWuELjxkjAayQ": {
+  "name": "Frank",
+  "pnl_sol": -0.016,
+  "swaps": 29,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "Fyr3eVTySpfyczEzUFcJ3SPtEKRwWKhxsmAWLghwP3FL": {
+  "name": "Limfork 2",
+  "pnl_sol": 0.0,
+  "swaps": 1,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "93kk52HkrH5pHEPyb2KM62mP4cWA1N5DaSgBgDzA2uT9": {
+  "name": "Limfork 3",
+  "pnl_sol": -1.741,
+  "swaps": 11,
+  "win_txs": 2,
+  "chain": "SOL"
+ },
+ "Bi4rd5FH5bYEN8scZ7wevxNZyNmKHdaBcvewdPFxYdLt": {
+  "name": "theo",
+  "pnl_sol": 0.0,
+  "swaps": 4,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "8MaVa9kdt3NW4Q5HyNAm1X5LbR8PQRVDc1W8NMVK88D5": {
+  "name": "Daumen",
+  "pnl_sol": 8.522,
+  "swaps": 22,
+  "win_txs": 6,
+  "chain": "SOL"
+ },
+ "sAdNbe1cKNMDqDsa4npB3TfL62T14uAo2MsUQfLvzLT": {
+  "name": "Ethan",
+  "pnl_sol": 5.474,
+  "swaps": 37,
+  "win_txs": 18,
+  "chain": "SOL"
+ },
+ "AK18Ru6UzvbhBWcfnhALuMM4hSXvyDCmvMkrZD3QQqrU": {
+  "name": "Zinc",
+  "pnl_sol": 236.126,
+  "swaps": 41,
+  "win_txs": 12,
+  "chain": "SOL"
+ },
+ "68XiYbqQedUbV1EboBhtZDtTTzX4vwUBzKB6rbUGPvHj": {
+  "name": "Joji Fomo",
+  "pnl_sol": 0.029,
+  "swaps": 39,
+  "win_txs": 1,
+  "chain": "SOL"
+ },
+ "3NbL2gNYoZ2fXnpsxNwMWdpHhw2f9tfbSxBR5JwcWpKY": {
+  "name": "MotionGuy",
+  "pnl_sol": -330.727,
+  "swaps": 56,
+  "win_txs": 21,
+  "chain": "SOL"
+ },
+ "2Xjizmu5FwVX36JyVGcWMDaNoQN1VWU25tz1TFk24nd7": {
+  "name": "Lunar 2",
+  "pnl_sol": -52.771,
+  "swaps": 32,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "E8gUTbH5MS321fhCbR9y41ZMvbMz75MLsqHYmV7wWb8p": {
+  "name": "Brez 4",
+  "pnl_sol": 125.746,
+  "swaps": 25,
+  "win_txs": 13,
+  "chain": "SOL"
+ },
+ "9JJcdKxZc7ZwSrBs6UmTGYVXVkeP86eBigbvgriDAMxB": {
+  "name": "Brez 3",
+  "pnl_sol": 61.3,
+  "swaps": 4,
+  "win_txs": 2,
+  "chain": "SOL"
+ },
+ "mTUPSf7F6CVy7q3AXFzWqWy1ixTT69YMMGxM4DaoNhc": {
+  "name": "Brez 2",
+  "pnl_sol": 87.41,
+  "swaps": 6,
+  "win_txs": 3,
+  "chain": "SOL"
+ },
+ "Fvkc2thk1YcAASdR2gi8uf9n67JW9Dqqr9iRd99MDhoB": {
+  "name": "Brez Main",
+  "pnl_sol": -0.014,
+  "swaps": 25,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "6gSKM3zwnqZtSkujAWt6saxMrFBH9qJ1f8YfJbWEHP5j": {
+  "name": "Brez 5",
+  "pnl_sol": 49.141,
+  "swaps": 9,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "yHCxHBEaJW5tbndqC8JciSThr7U1cqLpdcsvHcx6PRe": {
+  "name": "Superman",
+  "pnl_sol": 263.926,
+  "swaps": 38,
+  "win_txs": 35,
+  "chain": "SOL"
+ },
+ "BAr5csYtpWoNpwhUjixX7ZPHXkUciFZzjBp9uNxZXJPh": {
+  "name": "Jack Duval",
+  "pnl_sol": 0.0,
+  "swaps": 2,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "VJSDW6S74YXR4rRR9P4xwhMvLZJQMhrUb8XMFirUsy1": {
+  "name": "Beanz",
+  "pnl_sol": -70.914,
+  "swaps": 63,
+  "win_txs": 12,
+  "chain": "SOL"
+ },
+ "78thMY8yfYzXGRhSArPMr7j8Rsh5QEPZviHVPfEfoMDM": {
+  "name": "BinkBinkBink",
+  "pnl_sol": 10.043,
+  "swaps": 36,
+  "win_txs": 6,
+  "chain": "SOL"
+ },
+ "823uTxi1tk7StRebfSnMw6aDdsSKWmuFsaU4Q7gzjMn1": {
+  "name": "Vibed12",
+  "pnl_sol": -5.511,
+  "swaps": 95,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "3dhwViJnxKhRJcJJznrVt6oYkuD1bULvsUXscuxpNBDs": {
+  "name": "Vibed10",
+  "pnl_sol": -4.2,
+  "swaps": 93,
+  "win_txs": 5,
+  "chain": "SOL"
+ },
+ "6vsBsvsWEcBUbMozq1niqnEsZnvZBwjajUicqg9yiCVW": {
+  "name": "Vibed11",
+  "pnl_sol": 3.79,
+  "swaps": 95,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "FxN3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR": {
+  "name": "Cupsey 2",
+  "pnl_sol": 0.0,
+  "swaps": 3,
+  "win_txs": 0,
+  "chain": "SOL"
+ },
+ "K27kZNq1P9a7A9HMSrkcwzLD7maN2S4VjhZW1ZSAvaG": {
+  "name": "Euris 5",
+  "pnl_sol": -53.006,
+  "swaps": 42,
+  "win_txs": 4,
+  "chain": "SOL"
+ },
+ "7uxnomLXtEsF9VdAwdEQ7gHpazfYx9kEtKqJcYu3VCYc": {
+  "name": "Aloh 4",
+  "pnl_sol": -12.572,
+  "swaps": 68,
+  "win_txs": 10,
+  "chain": "SOL"
+ },
+ "Gpz8HiRqUWkAa6SFD8DPuXCNzkvqnHbdVhRNNqUxsUbh": {
+  "name": "Euris 4",
+  "pnl_sol": -4.288,
+  "swaps": 23,
+  "win_txs": 8,
+  "chain": "SOL"
+ },
+ "J5bTvuE9GoWowCrDqt9m5inuVrhtxadm1kLbPb2rS2HL": {
+  "name": "Aloh 5",
+  "pnl_sol": 12.065,
+  "swaps": 50,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "9yYya3F5EJoLnBNKW6z4bZvyQytMXzDcpU5D6yYr4jqL": {
+  "name": "Loopier",
+  "pnl_sol": 88.534,
+  "swaps": 54,
+  "win_txs": 25,
+  "chain": "SOL"
+ },
+ "FR8zkeLQd7q1C6xgyB3P3KPW81aPRos261f2NGVP4LFw": {
+  "name": "Aloh 5",
+  "pnl_sol": -35.429,
+  "swaps": 56,
+  "win_txs": 7,
+  "chain": "SOL"
+ },
+ "AeBgYrBba5Cq38HR7G6quKairkyCpBk5Nt2kKyaEFZUr": {
+  "name": "Vibed 5",
+  "pnl_sol": -29.349,
+  "swaps": 37,
+  "win_txs": 16,
+  "chain": "SOL"
+ }
+}

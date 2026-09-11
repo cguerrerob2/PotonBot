@@ -128,7 +128,7 @@ async def main():
     else:
         log(f"Solana RPC OK: {sol_rpc[:60]}")
 
-    async def on_alert(chain, token_addr, count, buys):
+    async def on_alert(chain, token_addr, count, score_sum, buys):
         # Dashboard: Dexscreener + (SOL) top holders & pump.fun data, all in parallel
         info, holders, pump = await asyncio.gather(
             fetch_token_info(chain, token_addr),
@@ -140,13 +140,15 @@ async def main():
         if chain == "SOL" and pair_addr and holders:
             holders["top5"] = [(a, p) for a, p in holders["top5"] if a != pair_addr][:5]
         extra = {"holders": holders, "pump": pump}
-        await bot.send_alert(chain, token_addr, count, buys, info, extra)
+        await bot.send_alert(chain, token_addr, count, score_sum, buys, info, extra)
 
     tracker = BuyTracker(
         threshold=cfg.get("threshold", 5),
         window_sec=int(cfg.get("window_minutes", 30) * 60),
         cooldown_sec=int(cfg.get("alert_cooldown_minutes", 10) * 60),
         realert_extra=int(cfg.get("realert_extra_wallets", 2)),
+        min_wallets_score=int(cfg.get("min_wallets_score", 2)),
+        score_threshold=float(cfg.get("score_threshold", 1.76)),
         on_alert=on_alert,
     )
 

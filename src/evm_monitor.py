@@ -156,13 +156,14 @@ class EvmMonitor:
             amount = float(t.get("value", 0)) / (10 ** int(t.get("tokenDecimal", 18)))
         except (TypeError, ValueError, ZeroDivisionError):
             amount = 0.0
-        count = await self.tracker.add_buy(chain["name"], token, wallet["address"], {
+        count, score_sum = await self.tracker.add_buy(chain["name"], token, wallet["address"], {
             "name": wallet["rename"],
             "emoji": wallet.get("emoji", ""),
             "wallet": wallet["address"],
             "amount": amount,
             "symbol": t.get("tokenSymbol") or "",
             "tx_hash": t.get("hash") or "",
+            "score": wallet.get("score", 0.3),
         })
         n = abs(count)
-        log(f"[{chain['name']}] {wallet.get('emoji','')} {wallet['rename']} received {t.get('tokenSymbol','?')} ({n}/{self.tracker.threshold} wallets in window)")
+        log(f"[{chain['name']}] {wallet.get('emoji','')} {wallet['rename']} (score {wallet.get('score', 0.3):.2f}) received {t.get('tokenSymbol','?')} ({n} wallets, combined score {score_sum:.2f})")

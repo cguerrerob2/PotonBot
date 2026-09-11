@@ -40,16 +40,29 @@ class PotonCalledBot:
             self._channel = await self.client.fetch_channel(self.channel_id)
         return task
 
-    async def send_startup(self, n_sol: int, n_evm: int, threshold: int, window_min: int):
+    async def send_startup(self, n_sol: int, n_evm: int, threshold: int, window_min: int, rpc_ok: bool = True):
         msg = (
             f"🟢 **PotonCalled online** — watching **{n_sol}** SOL wallets"
             + (f" and **{n_evm}** EVM wallets (ETH/BASE/BSC)" if n_evm else "")
             + f".\nAlert when **{threshold}+** wallets ape the same coin within **{window_min} min**."
+            + f"\nAlerts ping: <@{self.ping_user_id}>"
         )
+        if not rpc_ok:
+            msg += "\n⚠️ **Solana RPC DOWN/invalid — SOL monitor can't work. Fix `SOLANA_RPC_URL`!**"
         try:
             await self._channel.send(msg)
         except Exception as e:
             log("DISCORD", f"Could not send startup message: {e}")
+
+    async def send_rpc_warning(self, rpc_url: str):
+        try:
+            await self._channel.send(
+                f"⚠️ <@{self.ping_user_id}> Solana RPC unreachable: `{rpc_url[:60]}`\n"
+                "No buys will be detected until you fix `SOLANA_RPC_URL`. "
+                "Helius format: `https://mainnet.helius-rpc.com/?api-key=YOUR_KEY`"
+            )
+        except Exception as e:
+            log("DISCORD", f"Could not send RPC warning: {e}")
 
     # ---------------- ALERT DASHBOARD ----------------
 

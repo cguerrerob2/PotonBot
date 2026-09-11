@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 import aiohttp
 
@@ -49,6 +50,10 @@ class SolanaMonitor:
         self.max_txs = cfg.get("max_txs_per_wallet_cycle", 3)
         self.offset = 0
         self.session: aiohttp.ClientSession | None = None
+        # stats for sweep summaries
+        self.rate_limits = 0
+        self.buys_detected = 0
+        self.sweep_start = None
 
     async def run(self):
         timeout = aiohttp.ClientTimeout(total=30)
@@ -78,6 +83,7 @@ class SolanaMonitor:
             try:
                 async with self.session.post(self.rpc_url, json=payload) as resp:
                     if resp.status == 429:
+                        self.rate_limits += 1
                         log(f"Rate limit (429). Backoff {delay}s")
                         await asyncio.sleep(delay)
                         delay = min(delay * 2, 45)
@@ -124,6 +130,8 @@ class SolanaMonitor:
         return chunk
 
     async def _cycle(self):
+        if self.offset == 0:
+            self.sweep_start = time.time()
         chunk = self._next_chunk()
         if not chunk:
             return
@@ -146,6 +154,10 @@ class SolanaMonitor:
             if not sigs:
                 continue
             last_seen = self.state.get_sol_last_sig(w["address"])
+            if last_seen is None:
+                # Wallet never initialized (e.g. init failed) -> baseline silently, never alert old txs
+                self.state.set_sol_last_sig(w["address"], sigs[0]["signature"])
+                continue
             new_sigs = []
             for s in sigs:  # newest first
                 if s["signature"] == last_seen:
@@ -159,6 +171,7 @@ class SolanaMonitor:
 
         self.state.save()
         if not to_fetch:
+            self._maybe_log_sweep()
             return
 
         # 2) Fetch transactions in batch
@@ -175,6 +188,7 @@ class SolanaMonitor:
             if not tx:
                 continue
             for mint, amount in self._extract_buys(tx, w["address"]).items():
+                self.buys_detected += 1
                 count = await self.tracker.add_buy("SOL", mint, w["address"], {
                     "name": w["rename"],
                     "emoji": w.get("emoji", ""),
@@ -185,6 +199,19 @@ class SolanaMonitor:
                 })
                 n = abs(count)
                 log(f"{w.get('emoji','')} {w['rename']} bought {mint[:8]}... ({n}/{self.tracker.threshold} wallets in window)")
+
+        self._maybe_log_sweep()
+
+    def _maybe_log_sweep(self):
+        """When a full rotation over all wallets finishes, log a health summary."""
+        if self.offset != 0 or self.sweep_start is None:
+            return
+        elapsed = time.time() - self.sweep_start
+        health = "OK" if self.rate_limits == 0 else f"RATE-LIMITED ({self.rate_limits}x429) - get a Helius key!"
+        log(f"SWEEP COMPLETE: {len(self.wallets)} wallets in {elapsed:.0f}s | buys seen: {self.buys_detected} | RPC: {health}")
+        self.rate_limits = 0
+        self.buys_detected = 0
+        self.sweep_start = None
 
     # ---------------- Parsing ----------------
 

@@ -127,6 +127,12 @@ class EvmMonitor:
                     await asyncio.sleep(0.3)
                     continue
                 last_ts = self.state.get_evm_last_ts(addr, chain_id)
+                if last_ts == 0:
+                    # Never initialized (init failed) -> baseline silently, never alert old txs
+                    self.state.set_evm_last_ts(addr, chain_id, int(txs[0]["timeStamp"]))
+                    self.state.save()
+                    await asyncio.sleep(0.3)
+                    continue
                 new_txs = [t for t in txs if int(t.get("timeStamp", 0)) > last_ts]
                 if new_txs:
                     self.state.set_evm_last_ts(addr, chain_id, int(txs[0]["timeStamp"]))

@@ -1,8 +1,10 @@
 import asyncio
 import json
 import os
+import re
 import sys
 
+import aiohttp
 from dotenv import load_dotenv
 
 from src.tracker import BuyTracker
@@ -15,6 +17,34 @@ from src.solana_extras import get_top_holders, get_pump_info
 from src.logutil import log as _log
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_SOL_RPC = "https://api.mainnet-beta.solana.com"
+
+
+def normalize_rpc(url: str) -> tuple[str, str | None]:
+    """Returns (rpc_url, warning). Accepts full URLs or bare Helius API keys."""
+    u = (url or "").strip()
+    if not u:
+        return DEFAULT_SOL_RPC, "SOLANA_RPC_URL empty — using public RPC (heavy rate limits, get a free Helius key)"
+    if u.startswith("http://") or u.startswith("https://"):
+        return u, None
+    # Bare Helius API key (UUID) without URL
+    if re.fullmatch(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", u):
+        return f"https://mainnet.helius-rpc.com/?api-key={u}", "SOLANA_RPC_URL was a bare Helius key — auto-built full URL"
+    return DEFAULT_SOL_RPC, f"SOLANA_RPC_URL '{u[:30]}' is not a valid URL — using public RPC (slow!)"
+
+
+async def check_rpc_health(rpc_url: str) -> bool:
+    """Quick getSlot call to verify the RPC works before starting monitors."""
+    try:
+        payload = {"jsonrpc": "2.0", "id": 1, "method": "getSlot", "params": []}
+        async with aiohttp.ClientSession() as s:
+            async with s.post(rpc_url, json=payload, timeout=aiohttp.ClientTimeout(total=10)) as r:
+                if r.status != 200:
+                    return False
+                data = await r.json()
+                return "result" in data
+    except Exception:
+        return False
 
 
 def setup_file_logging():
@@ -86,7 +116,17 @@ async def main():
     await bot.start()
 
     # ---- Tracker + alerts ----
-    sol_rpc = sol_rpc_env or "https://api.mainnet-beta.solana.com"
+    sol_rpc, rpc_warning = normalize_rpc(sol_rpc_env)
+    if rpc_warning:
+        log(f"WARNING: {rpc_warning}")
+
+    # Health check: if the RPC doesn't respond, warn loudly (and on Discord)
+    rpc_ok = await check_rpc_health(sol_rpc)
+    if not rpc_ok:
+        log("FATAL: Solana RPC is NOT reachable. The SOL monitor cannot work. Fix SOLANA_RPC_URL!")
+        await bot.send_rpc_warning(sol_rpc)
+    else:
+        log(f"Solana RPC OK: {sol_rpc[:60]}")
 
     async def on_alert(chain, token_addr, count, buys):
         # Dashboard: Dexscreener + (SOL) top holders & pump.fun data, all in parallel
@@ -117,6 +157,7 @@ async def main():
         n_evm=len(evm_wallets) if (evm_wallets and etherscan_key) else 0,
         threshold=cfg.get("threshold", 5),
         window_min=cfg.get("window_minutes", 30),
+        rpc_ok=rpc_ok,
     )
 
     # ---- Monitors ----

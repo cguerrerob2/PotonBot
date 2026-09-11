@@ -13,7 +13,7 @@ CHAIN_COLORS = {
 }
 
 
-class PotonCalledBot:
+class PotonBot:
     def __init__(self, token: str, channel_id: int, ping_user_id: str):
         intents = discord.Intents.default()
         self.client = discord.Client(intents=intents)
@@ -42,7 +42,7 @@ class PotonCalledBot:
 
     async def send_startup(self, n_sol: int, n_evm: int, threshold: int, window_min: int, rpc_ok: bool = True):
         msg = (
-            f"🟢 **PotonCalled online** — watching **{n_sol}** SOL wallets"
+            f"🟢 **Poton online** — watching **{n_sol}** SOL wallets"
             + (f" and **{n_evm}** EVM wallets (ETH/BASE/BSC)" if n_evm else "")
             + f".\nAlert when **{threshold}+** wallets ape the same coin within **{window_min} min**."
             + f"\nAlerts ping: <@{self.ping_user_id}>"
@@ -176,7 +176,7 @@ class PotonCalledBot:
         if chain == "SOL":
             embed.add_field(name="📈 TIP:", value=f"Trade on [Axiom](https://axiom.trade/meme/{token})", inline=False)
 
-        embed.set_footer(text=f"PotonCalled 🚨 · {count} wallets in window · {chain}")
+        embed.set_footer(text=f"Poton 🚨 · {count} wallets in window · {chain}")
 
         # Content: "CA @your_tag" as requested
         content = f"{token} <@{self.ping_user_id}>"

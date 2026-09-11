@@ -219,8 +219,10 @@ class SolanaMonitor:
         if self.offset != 0 or self.sweep_start is None:
             return
         elapsed = time.time() - self.sweep_start
-        health = "OK" if self.rate_limits == 0 else f"RATE-LIMITED ({self.rate_limits}x429) - get a Helius key!"
-        log(f"SWEEP COMPLETE: {len(self.wallets)} wallets in {elapsed:.0f}s | buys seen: {self.buys_detected} | RPC: {health}")
+        health = "OK" if self.rate_limits == 0 else f"RATE-LIMITED ({self.rate_limits}x429)"
+        sweeps_day = 86400 / max(elapsed, 1)
+        est_daily = int(sweeps_day * len(self.wallets))
+        log(f"SWEEP COMPLETE: {len(self.wallets)} wallets in {elapsed:.0f}s | buys seen: {self.buys_detected} | RPC: {health} | ~{est_daily:,} credits/day")
         self.rate_limits = 0
         self.buys_detected = 0
         self.sweep_start = None

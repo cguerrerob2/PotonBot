@@ -1,4 +1,4 @@
-# PotonBot (PotonCalled)
+# PotonBot (Poton)
 
 Multichain Discord bot that watches a list of tracked wallets and pings you when **5+ wallets ape the same coin** within a time window — with a full token dashboard (MCap, FDV, volume, 5m stats, top holders, dev, links).
 

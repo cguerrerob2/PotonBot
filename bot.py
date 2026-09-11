@@ -11,7 +11,7 @@ from src.tracker import BuyTracker
 from src.state import State
 from src.solana_monitor import SolanaMonitor
 from src.evm_monitor import EvmMonitor
-from src.discord_bot import PotonCalledBot
+from src.discord_bot import PotonBot
 from src.dexscreener import fetch_token_info
 from src.solana_extras import get_top_holders, get_pump_info
 from src.logutil import log as _log
@@ -112,7 +112,7 @@ async def main():
     log(f"Wallets loaded: {len(sol_wallets)} SOL, {len(evm_wallets)} EVM")
 
     # ---- Discord ----
-    bot = PotonCalledBot(token, int(channel_id), ping_user)
+    bot = PotonBot(token, int(channel_id), ping_user)
     await bot.start()
 
     # ---- Tracker + alerts ----
@@ -177,7 +177,7 @@ async def main():
         log("No active monitors. Check wallets.json.")
         sys.exit(1)
 
-    log("PotonCalled is watching. Ctrl+C to stop.")
+    log("Poton is watching. Ctrl+C to stop.")
     await asyncio.gather(*tasks)
 
 

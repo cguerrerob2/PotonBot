@@ -45,3 +45,10 @@ class State:
 
     def set_evm_last_ts(self, address: str, chain_id: str, ts: int):
         self.data["evm"][f"{chain_id}:{address.lower()}"] = int(ts)
+
+    # --- EVM RPC mode (HOOD): latest scanned block per wallet+chain ---
+    def get_evm_last_block(self, address: str, chain_id: str) -> int:
+        return int(self.data["evm"].get(f"block:{chain_id}:{address.lower()}", 0))
+
+    def set_evm_last_block(self, address: str, chain_id: str, block: int):
+        self.data["evm"][f"block:{chain_id}:{address.lower()}"] = int(block)

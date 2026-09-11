@@ -4,14 +4,17 @@ import aiohttp
 
 from .logutil import log as _log
 
-# Etherscan V2 (ETH-like chains) + Blockscout (Robinhood Chain)
+# Etherscan V2 (BASE/BSC) + JSON-RPC directo para Robinhood Chain (Blockscout bloquea datacenters)
 ETHERSCAN_V2 = "https://api.etherscan.io/v2/api"
-BLOCKSCOUT_HOOD = "https://robinhoodchain.blockscout.com/api"
+HOOD_RPC = "https://rpc.mainnet.chain.robinhood.com"
+
+# keccak256("Transfer(address,address,uint256)")
+TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 
 CHAINS = {
     "8453": {"name": "BASE", "explorer": "https://basescan.org/tx/", "api": ETHERSCAN_V2, "needs_key": True},
     "56": {"name": "BSC", "explorer": "https://bscscan.com/tx/", "api": ETHERSCAN_V2, "needs_key": True},
-    "4663": {"name": "HOOD", "explorer": "https://robinhoodchain.blockscout.com/tx/", "api": BLOCKSCOUT_HOOD, "needs_key": False},
+    "4663": {"name": "HOOD", "explorer": "https://robinhoodchain.blockscout.com/tx/", "mode": "rpc", "rpc": HOOD_RPC},
 }
 
 # Stables/wrapped excluded per chain (lowercase addresses)
@@ -42,7 +45,7 @@ def log(msg: str):
 
 
 class EvmMonitor:
-    """Monitor for EVM wallets (0x...) on ETH, BASE and BSC via Etherscan V2."""
+    """Monitor for EVM wallets (0x...) on BASE & BSC (Etherscan V2) + HOOD (raw JSON-RPC logs)."""
 
     def __init__(self, api_key: str, wallets: list, tracker, state, cfg: dict):
         self.api_key = api_key
@@ -54,6 +57,110 @@ class EvmMonitor:
         self.txs_limit = cfg.get("txs_limit", 10)
         self.offset = 0
         self.session: aiohttp.ClientSession | None = None
+        self._meta_cache: dict = {}  # token -> (symbol, decimals)
+
+    # ---------------- JSON-RPC (HOOD) ----------------
+
+    async def _rpc_call(self, rpc_url: str, method: str, params: list):
+        payload = {"jsonrpc": "2.0", "id": 1, "method": method, "params": params}
+        for attempt in range(3):
+            try:
+                async with self.session.post(rpc_url, json=payload) as resp:
+                    if resp.status in (403, 429):
+                        await asyncio.sleep(3 + attempt * 4)
+                        continue
+                    resp.raise_for_status()
+                    data = await resp.json()
+                    return data.get("result")
+            except Exception as e:
+                log(f"RPC error {method}: {e}")
+                await asyncio.sleep(3 + attempt * 4)
+        return None
+
+    @staticmethod
+    def _decode_symbol(hexstr) -> str:
+        if not hexstr or hexstr == "0x":
+            return "?"
+        h = hexstr[2:]
+        try:
+            if len(h) >= 128:  # ABI string: offset + len + data
+                strlen = int(h[64:128], 16)
+                s = bytes.fromhex(h[128:128 + strlen * 2]).decode("utf-8", errors="ignore").strip()
+                if s:
+                    return s
+            if len(h) >= 64:  # bytes32 variant
+                s = bytes.fromhex(h[:64]).rstrip(b"\x00").decode("utf-8", errors="ignore").strip()
+                if s:
+                    return s
+        except Exception:
+            pass
+        return "?"
+
+    async def _token_meta(self, rpc_url: str, token: str) -> tuple:
+        if token in self._meta_cache:
+            return self._meta_cache[token]
+        sym_res, dec_res = await asyncio.gather(
+            self._rpc_call(rpc_url, "eth_call", [{"to": token, "data": "0x95d89b41"}, "latest"]),
+            self._rpc_call(rpc_url, "eth_call", [{"to": token, "data": "0x313ce567"}, "latest"]),
+        )
+        symbol = self._decode_symbol(sym_res)
+        try:
+            decimals = int(dec_res, 16) if dec_res else 18
+        except (TypeError, ValueError):
+            decimals = 18
+        self._meta_cache[token] = (symbol, decimals)
+        return self._meta_cache[token]
+
+    async def _poll_rpc_wallet(self, chain_id: str, chain: dict, w: dict, latest_block: int):
+        addr = w["address"].lower()
+        last = self.state.get_evm_last_block(addr, chain_id)
+        if last == 0:
+            # Never initialized -> baseline silently
+            self.state.set_evm_last_block(addr, chain_id, latest_block)
+            self.state.save()
+            return
+        if latest_block <= last:
+            return
+        padded = "0x" + "0" * 24 + addr[2:]
+        logs = await self._rpc_call(chain["rpc"], "eth_getLogs", [{
+            "fromBlock": hex(last + 1),
+            "toBlock": hex(latest_block),
+            "topics": [TRANSFER_TOPIC, None, padded],
+        }])
+        self.state.set_evm_last_block(addr, chain_id, latest_block)
+        self.state.save()
+        for lg in logs or []:
+            await self._process_log(chain_id, chain, w, lg)
+
+    async def _process_log(self, chain_id: str, chain: dict, wallet: dict, lg: dict):
+        addr = wallet["address"].lower()
+        token = (lg.get("address") or "").lower()
+        topics = lg.get("topics") or []
+        if len(topics) < 3 or not token:
+            return
+        from_addr = ("0x" + topics[1][-40:]).lower()
+        if from_addr == addr:
+            return
+        if token in EXCLUDED_TOKENS.get(chain_id, set()):
+            return
+        symbol, decimals = await self._token_meta(chain["rpc"], token)
+        if symbol.upper() in EXCLUDED_SYMBOLS:
+            return
+        try:
+            amount = int(lg.get("data", "0x0"), 16) / (10 ** decimals)
+        except (TypeError, ValueError, ZeroDivisionError):
+            amount = 0.0
+        count, score_sum = await self.tracker.add_buy(chain["name"], token, wallet["address"], {
+            "name": wallet["rename"],
+            "emoji": wallet.get("emoji", ""),
+            "wallet": wallet["address"],
+            "amount": amount,
+            "symbol": symbol,
+            "tx_hash": lg.get("transactionHash") or "",
+            "score": wallet.get("score", 0.3),
+        })
+        n = abs(count)
+        log(f"[{chain['name']}] {wallet.get('emoji','')} {wallet['rename']} (score {wallet.get('score', 0.3):.2f}) received {symbol} ({n} wallets, combined score {score_sum:.2f})")
 
     async def run(self):
         timeout = aiohttp.ClientTimeout(total=30)
@@ -99,9 +206,23 @@ class EvmMonitor:
 
     async def _init_state(self):
         log("Initializing state (no alerts)...")
+        # RPC chains: baseline = bloque actual (una sola llamada para todas las wallets)
+        for chain_id, chain in CHAINS.items():
+            if chain.get("mode") != "rpc":
+                continue
+            latest = await self._rpc_call(chain["rpc"], "eth_blockNumber", [])
+            if latest:
+                n = int(latest, 16)
+                for w in self.wallets:
+                    if self.state.get_evm_last_block(w["address"].lower(), chain_id) == 0:
+                        self.state.set_evm_last_block(w["address"].lower(), chain_id, n)
+                log(f"[{chain['name']}] baseline at block {n}")
+        # API chains (Etherscan V2)
         for w in self.wallets:
             addr = w["address"].lower()
-            for chain_id in CHAINS:
+            for chain_id, chain in CHAINS.items():
+                if chain.get("mode") == "rpc":
+                    continue
                 if self.state.get_evm_last_ts(addr, chain_id) > 0:
                     continue
                 txs = await self._fetch_tokentx(chain_id, addr)
@@ -123,9 +244,21 @@ class EvmMonitor:
         chunk = self._next_chunk()
         if not chunk:
             return
+        # Latest block de las chains RPC (una llamada por ciclo)
+        latest_blocks = {}
+        for chain_id, chain in CHAINS.items():
+            if chain.get("mode") == "rpc":
+                res = await self._rpc_call(chain["rpc"], "eth_blockNumber", [])
+                if res:
+                    latest_blocks[chain_id] = int(res, 16)
         for w in chunk:
             addr = w["address"].lower()
             for chain_id, chain in CHAINS.items():
+                if chain.get("mode") == "rpc":
+                    if chain_id in latest_blocks:
+                        await self._poll_rpc_wallet(chain_id, chain, w, latest_blocks[chain_id])
+                    await asyncio.sleep(0.3)
+                    continue
                 txs = await self._fetch_tokentx(chain_id, addr)
                 if not txs:
                     await asyncio.sleep(0.3)

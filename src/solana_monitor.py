@@ -54,6 +54,15 @@ class SolanaMonitor:
         self.rate_limits = 0
         self.buys_detected = 0
         self.sweep_start = None
+        # adaptive throttle: self-tunes to what the RPC plan allows
+        self._rpc_delay = 2.0
+        self._last_rpc = 0.0
+
+    async def _throttle(self):
+        wait = self._rpc_delay - (time.time() - self._last_rpc)
+        if wait > 0:
+            await asyncio.sleep(wait)
+        self._last_rpc = time.time()
 
     async def run(self):
         timeout = aiohttp.ClientTimeout(total=30)
@@ -81,15 +90,18 @@ class SolanaMonitor:
         delay = 3
         for attempt in range(4):
             try:
+                await self._throttle()
                 async with self.session.post(self.rpc_url, json=payload) as resp:
                     if resp.status == 429:
                         self.rate_limits += 1
-                        log(f"Rate limit (429). Backoff {delay}s")
+                        self._rpc_delay = min(self._rpc_delay * 1.5, 10.0)
+                        log(f"Rate limit (429). Backoff {delay}s | throttle -> {self._rpc_delay:.1f}s")
                         await asyncio.sleep(delay)
                         delay = min(delay * 2, 45)
                         continue
                     resp.raise_for_status()
                     data = await resp.json()
+                    self._rpc_delay = max(self._rpc_delay * 0.95, 1.5)
                     items = data if isinstance(data, list) else [data]
                     return {item.get("id"): item for item in items}
             except Exception as e:
@@ -103,8 +115,8 @@ class SolanaMonitor:
     async def _init_state(self):
         """First pass: store the latest signature of each wallet without alerting."""
         log("Initializing state (no alerts)...")
-        for i in range(0, len(self.wallets), 20):
-            chunk = self.wallets[i:i + 20]
+        for i in range(0, len(self.wallets), 10):
+            chunk = self.wallets[i:i + 10]
             calls = [
                 ("getSignaturesForAddress", [w["address"], {"limit": 1}])
                 for w in chunk

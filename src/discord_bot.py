@@ -1,9 +1,8 @@
 import asyncio
-import re
 
 import discord
 
-from .dexscreener import EXPLORERS, CHAIN_SLUGS, fmt_usd, fmt_amount, fmt_age, fetch_token_info
+from .dexscreener import EXPLORERS, CHAIN_SLUGS, fmt_usd, fmt_amount, fmt_age
 from .logutil import log
 
 CHAIN_COLORS = {
@@ -13,24 +12,16 @@ CHAIN_COLORS = {
     "BSC": 0xF0B90B,   # BSC yellow
 }
 
-CA_SOL_RE = re.compile(r"\b[1-9A-HJ-NP-Za-km-z]{32,44}\b")
-CA_EVM_RE = re.compile(r"\b0x[0-9a-fA-F]{40}\b")
-
 
 class PotonBot:
     def __init__(self, token: str, channel_id: int, ping_user_id: str):
         intents = discord.Intents.default()
-        intents.message_content = True  # needed to read CAs in the tracked chat
         self.client = discord.Client(intents=intents)
         self.token = token
         self.channel_id = channel_id
         self.ping_user_id = ping_user_id
         self._ready = asyncio.Event()
         self._channel = None
-        # call-tracking config (set via set_call_config)
-        self.call_cfg = {}
-        self.buylog = None
-        self._alerted_calls = set()  # CAs already alerted (no duplicados)
 
         @self.client.event
         async def on_ready():
@@ -40,17 +31,6 @@ class PotonBot:
             except Exception:
                 pass
             self._ready.set()
-
-        @self.client.event
-        async def on_message(message):
-            try:
-                await self._handle_call_message(message)
-            except Exception as e:
-                log("CALLS", f"Error handling message: {e}")
-
-    def set_call_config(self, call_cfg: dict, buylog):
-        self.call_cfg = call_cfg or {}
-        self.buylog = buylog
 
     async def start(self):
         task = asyncio.create_task(self.client.start(self.token))
@@ -68,8 +48,6 @@ class PotonBot:
             + f" or **2+** smart wallets with combined score ≥ **1.76** 🧠"
             + f"\nAlerts ping: **@everyone**"
         )
-        if self.call_cfg.get("enabled"):
-            msg += f"\n📞 Call-tracking ON in <#{self.call_cfg.get('channel_id')}> for {len(self.call_cfg.get('tracked_user_ids', []))} hunters."
         if not rpc_ok:
             msg += "\n⚠️ **Solana RPC DOWN/invalid — SOL monitor can't work. Fix `SOLANA_RPC_URL`!**"
         try:
@@ -80,73 +58,12 @@ class PotonBot:
     async def send_rpc_warning(self, rpc_url: str):
         try:
             await self._channel.send(
-                f"⚠️ <@{self.ping_user_id}> Solana RPC unreachable: `{rpc_url[:60]}`\n"
+                f"⚠️ @everyone Solana RPC unreachable: `{rpc_url[:60]}`\n"
                 "No buys will be detected until you fix `SOLANA_RPC_URL`. "
                 "Helius format: `https://mainnet.helius-rpc.com/?api-key=YOUR_KEY`"
             )
         except Exception as e:
             log("DISCORD", f"Could not send RPC warning: {e}")
-
-    # ---------------- CALL TRACKING (cryptic chat) ----------------
-
-    async def _handle_call_message(self, message):
-        cfg = self.call_cfg
-        if not cfg.get("enabled") or not self.buylog:
-            return
-        if message.author.bot:
-            return
-        if str(message.channel.id) != str(cfg.get("channel_id")):
-            return
-        tracked = [str(u) for u in cfg.get("tracked_user_ids", [])]
-        if str(message.author.id) not in tracked:
-            return
-
-        content = message.content or ""
-        cas = set(CA_EVM_RE.findall(content))
-        cas |= {m for m in CA_SOL_RE.findall(content) if not m.startswith("0x")}
-        if not cas:
-            return
-
-        min_usd = float(cfg.get("min_usd_before_call", 400))
-        msg_ts = message.created_at.timestamp()
-
-        for ca in cas:
-            key = ca.lower()
-            if key in self._alerted_calls:
-                continue
-            chains = ["ETH", "BASE", "BSC"] if ca.startswith("0x") else ["SOL"]
-            found = None
-            for chain in chains:
-                buyers = self.buylog.buyers_of(chain, ca, msg_ts)
-                qualified = {w: b for w, b in buyers.items() if b["usd_total"] >= min_usd}
-                if qualified:
-                    found = (chain, qualified)
-                    break
-            if not found:
-                log("CALLS", f"CA posted by {message.author} but no tracked wallet >= ${min_usd:.0f} before: {ca[:10]}...")
-                continue
-
-            chain, qualified = found
-            self._alerted_calls.add(key)
-            total_usd = sum(b["usd_total"] for b in qualified.values())
-            log("CALLS", f"CALL ALERT: {message.author} posted {ca[:10]}... — {len(qualified)} wallets in with ${total_usd:,.0f} BEFORE the call")
-
-            buys = []
-            for w, b in sorted(qualified.items(), key=lambda kv: -kv[1]["usd_total"]):
-                buys.append({
-                    "name": b["name"],
-                    "emoji": b["emoji"],
-                    "wallet": w,
-                    "usd": b["usd_total"],
-                    "amount": None,
-                    "sol_spent": None,
-                    "tx_hash": b["txs"][0] if b["txs"] else "",
-                    "score": b.get("score", 0.3),
-                })
-            score_sum = sum(float(b["score"]) for b in buys)
-            info = await fetch_token_info(chain, ca)
-            extra = {"caller_id": message.author.id, "caller_name": str(message.author)}
-            await self.send_alert(chain, ca, len(buys), score_sum, buys, info, extra)
 
     # ---------------- ALERT DASHBOARD ----------------
 
@@ -167,10 +84,6 @@ class PotonBot:
             embed.set_thumbnail(url=info["image"])
 
         lines = []
-
-        # --- Caller (si viene de un call de Discord) ---
-        if extra.get("caller_id"):
-            lines.append(f"📞 Called by <@{extra['caller_id']}>")
 
         # --- pump.fun / DEX line ---
         pump = extra.get("pump") or {}
@@ -216,7 +129,7 @@ class PotonBot:
         if pump.get("creator"):
             lines.append(f"🧑‍💻 DEV: `{pump['creator']}`")
 
-        # --- USD bought per wallet ---
+        # --- USD bought per wallet (SOL: exact via SOL spent; EVM: amount x price) ---
         sol_price = extra.get("sol_price")
         token_price = info.get("price_usd")
         total_usd = 0.0
@@ -261,10 +174,7 @@ class PotonBot:
         wallets_txt = "\n".join(wl)
         if len(wallets_txt) > 1000:
             wallets_txt = wallets_txt[:1000] + "\n..."
-        field_name = f"👀 {count} WALLETS IN · SCORE {score_sum:.2f}"
-        if extra.get("caller_id"):
-            field_name = f"👀 {count} WALLETS IN BEFORE THE CALL · {fmt_usd(total_usd)}"
-        embed.add_field(name=field_name, value=wallets_txt or "?", inline=False)
+        embed.add_field(name=f"👀 {count} WALLETS IN · SCORE {score_sum:.2f}", value=wallets_txt or "?", inline=False)
 
         # --- CA ---
         embed.add_field(name="CA", value=f"`{token}`", inline=False)
@@ -295,11 +205,7 @@ class PotonBot:
         embed.set_footer(text=f"Poton 🚨 · {count} wallets · score {score_sum:.2f} · {chain}")
 
         # Content: "CA @everyone"
-        if extra.get("caller_id"):
-            content = (f"{token} @everyone\n📞 **{extra.get('caller_name', 'hunter')}** dropped the CA — "
-                       f"tracked wallets were already in with **{fmt_usd(total_usd)}**")
-        else:
-            content = f"{token} @everyone"
+        content = f"{token} @everyone"
         try:
             await self._channel.send(content=content, embed=embed)
             log("ALERT", f"{count} wallets -> ${symbol} ({chain}) {token}")

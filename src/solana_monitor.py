@@ -4,7 +4,6 @@ import time
 import aiohttp
 
 from .logutil import log as _log
-from .dexscreener import fetch_sol_price
 
 WSOL = "So11111111111111111111111111111111111111112"
 
@@ -40,12 +39,11 @@ def log(msg: str):
 
 
 class SolanaMonitor:
-    def __init__(self, rpc_url: str, wallets: list, tracker, state, cfg: dict, buylog=None):
+    def __init__(self, rpc_url: str, wallets: list, tracker, state, cfg: dict):
         self.rpc_url = rpc_url
         self.wallets = wallets
         self.tracker = tracker
         self.state = state
-        self.buylog = buylog
         self.interval = cfg.get("poll_interval_sec", 8)
         self.per_cycle = cfg.get("wallets_per_cycle", 10)
         self.sig_limit = cfg.get("signatures_limit", 5)
@@ -203,12 +201,6 @@ class SolanaMonitor:
                 continue
             for mint, amount, sol_spent in self._extract_buys(tx, w["address"]):
                 self.buys_detected += 1
-                # Registrar en el historial con USD (para cruzar con calls de Discord)
-                if self.buylog and sol_spent > 0:
-                    px = await fetch_sol_price()
-                    if px:
-                        self.buylog.add("SOL", mint, w["address"], w["rename"],
-                                        w.get("emoji", ""), sol_spent * px, sig, w.get("score", 0.3))
                 count, score_sum = await self.tracker.add_buy("SOL", mint, w["address"], {
                     "name": w["rename"],
                     "emoji": w.get("emoji", ""),

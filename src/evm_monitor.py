@@ -3,7 +3,6 @@ import asyncio
 import aiohttp
 
 from .logutil import log as _log
-from .dexscreener import fetch_token_info
 
 # Etherscan V2: one API key works for every chain (chainid param)
 API_URL = "https://api.etherscan.io/v2/api"
@@ -43,12 +42,11 @@ def log(msg: str):
 class EvmMonitor:
     """Monitor for EVM wallets (0x...) on ETH, BASE and BSC via Etherscan V2."""
 
-    def __init__(self, api_key: str, wallets: list, tracker, state, cfg: dict, buylog=None):
+    def __init__(self, api_key: str, wallets: list, tracker, state, cfg: dict):
         self.api_key = api_key
         self.wallets = wallets
         self.tracker = tracker
         self.state = state
-        self.buylog = buylog
         self.interval = cfg.get("poll_interval_sec", 15)
         self.per_cycle = cfg.get("wallets_per_cycle", 5)
         self.txs_limit = cfg.get("txs_limit", 10)
@@ -158,14 +156,6 @@ class EvmMonitor:
             amount = float(t.get("value", 0)) / (10 ** int(t.get("tokenDecimal", 18)))
         except (TypeError, ValueError, ZeroDivisionError):
             amount = 0.0
-        # Registrar en el historial con USD (para cruzar con calls de Discord)
-        if self.buylog:
-            info = await fetch_token_info(chain["name"], token)
-            px = info.get("price_usd")
-            if px and amount:
-                self.buylog.add(chain["name"], token, wallet["address"], wallet["rename"],
-                                wallet.get("emoji", ""), amount * float(px), t.get("hash") or "",
-                                wallet.get("score", 0.3))
         count, score_sum = await self.tracker.add_buy(chain["name"], token, wallet["address"], {
             "name": wallet["rename"],
             "emoji": wallet.get("emoji", ""),

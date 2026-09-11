@@ -155,6 +155,30 @@ async def main():
         else:
             log(f"Note: no Dexscreener data for {token_addr[:8]}... ({chain}) — fresh/unknown, alerting anyway")
 
+        # --- Filtro anti-dust: min $ por buy ---
+        min_buy_usd = float(cfg.get("min_buy_usd", 50))
+        token_price = (info or {}).get("price_usd")
+        for b in buys:
+            usd = None
+            if chain == "SOL" and b.get("sol_spent") and sol_price:
+                usd = float(b["sol_spent"]) * float(sol_price)
+            elif token_price and b.get("amount"):
+                try:
+                    usd = float(b["amount"]) * float(token_price)
+                except (TypeError, ValueError):
+                    usd = None
+            if usd is not None:
+                b["usd"] = usd
+        qualified = [b for b in buys if b.get("usd") is None or b["usd"] >= min_buy_usd]
+        q_count = len(qualified)
+        q_score = sum(float(b.get("score", 0.3)) for b in qualified)
+        still_hits = q_count >= tracker.threshold or (
+            q_count >= tracker.min_wallets_score and q_score >= tracker.score_threshold)
+        if not still_hits:
+            log(f"Alert skipped {token_addr[:8]}... ({chain}): only {q_count} wallets with >= ${min_buy_usd:.0f} buys (score {q_score:.2f}) — dust filtered")
+            return
+        buys, count, score_sum = qualified, q_count, q_score
+
         # Exclude the pool/pair from top holders
         pair_addr = (info or {}).get("pair_address")
         if chain == "SOL" and pair_addr and holders:

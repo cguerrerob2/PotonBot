@@ -12,6 +12,8 @@ CHAIN_COLORS = {
     "BSC": 0xF0B90B,   # BSC yellow
 }
 
+GMGN_SLUGS = {"SOL": "sol", "BASE": "base", "BSC": "bsc", "HOOD": "robinhood"}
+
 
 class PotonBot:
     def __init__(self, token: str, channel_id: int, ping_user_id: str):
@@ -82,6 +84,9 @@ class PotonBot:
         )
         if info.get("image"):
             embed.set_thumbnail(url=info["image"])
+        elif slug:
+            # fallback: CDN de Dexscreener sirve el icono por direccion aunque el par no traiga imagen
+            embed.set_thumbnail(url=f"https://dd.dexscreener.com/ds-data/tokens/{slug}/{token}.png")
 
         lines = []
 
@@ -184,10 +189,12 @@ class PotonBot:
         links = []
         if slug:
             links.append(f"[DEX](https://dexscreener.com/{slug}/{token})")
+        gmgn_slug = GMGN_SLUGS.get(chain)
         if chain == "SOL":
             links.append(f"[AXI](https://axiom.trade/meme/{token})")
             links.append(f"[PHO](https://photon-sol.tinyastro.io/en/lp/{token})")
-            links.append(f"[GMGN](https://gmgn.ai/sol/token/{token})")
+        if gmgn_slug:
+            links.append(f"[GMGN](https://gmgn.ai/{gmgn_slug}/token/{token})")
         exp = EXPLORERS.get(chain)
         if exp:
             links.append(f"[EXP]({exp}{token})")

@@ -154,6 +154,11 @@ class EvmMonitor:
         # Si vienen de una EOA es airdrop/transferencia -> fuera.
         if not await self._is_contract(chain["rpc"], sender):
             return
+        # Y la tx debe ser INICIADA por la wallet (si no, es airdrop via contrato)
+        tx = await self._rpc_call(chain["rpc"], "eth_getTransactionByHash", [lg.get("transactionHash") or ""])
+        tx_from = ((tx or {}).get("from") or "").lower()
+        if tx_from != addr:
+            return
         if token in EXCLUDED_TOKENS.get(chain_id, set()):
             return
         symbol, decimals = await self._token_meta(chain["rpc"], token)
@@ -292,6 +297,20 @@ class EvmMonitor:
                         await self._process_tx(chain_id, chain, w, t)
                 await asyncio.sleep(0.3)
 
+    async def _fetch_tx_from(self, chain_id: str, tx_hash: str) -> str:
+        """Outer-tx sender via Etherscan proxy (to tell real buys from airdrops)."""
+        chain = CHAINS[chain_id]
+        params = {
+            "module": "proxy", "action": "eth_getTransactionByHash", "txhash": tx_hash,
+            "chainid": chain_id, "apikey": self.api_key,
+        }
+        try:
+            async with self.session.get(chain["api"], params=params) as resp:
+                data = await resp.json()
+                return ((data.get("result") or {}).get("from") or "").lower()
+        except Exception:
+            return ""
+
     async def _process_tx(self, chain_id: str, chain: dict, wallet: dict, t: dict):
         addr = wallet["address"].lower()
         token = (t.get("contractAddress") or "").lower()
@@ -303,6 +322,10 @@ class EvmMonitor:
         if token in EXCLUDED_TOKENS.get(chain_id, set()):
             return
         if (t.get("tokenSymbol") or "").upper() in EXCLUDED_SYMBOLS:
+            return
+        # Solo BUYS: la tx exterior debe ser iniciada por la wallet (si no = airdrop/scam send)
+        tx_from = await self._fetch_tx_from(chain_id, t.get("hash") or "")
+        if tx_from and tx_from != addr:
             return
         try:
             amount = float(t.get("value", 0)) / (10 ** int(t.get("tokenDecimal", 18)))

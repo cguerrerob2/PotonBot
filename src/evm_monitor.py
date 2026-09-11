@@ -57,7 +57,8 @@ class EvmMonitor:
         self.txs_limit = cfg.get("txs_limit", 10)
         self.offset = 0
         self.session: aiohttp.ClientSession | None = None
-        self._meta_cache: dict = {}  # token -> (symbol, decimals)
+        self._meta_cache: dict = {}      # token -> (symbol, decimals)
+        self._contract_cache: dict = {}  # address -> bool (es contrato)
 
     # ---------------- JSON-RPC (HOOD) ----------------
 
@@ -132,14 +133,26 @@ class EvmMonitor:
         for lg in logs or []:
             await self._process_log(chain_id, chain, w, lg)
 
+    async def _is_contract(self, rpc_url: str, address: str) -> bool:
+        if address in self._contract_cache:
+            return self._contract_cache[address]
+        code = await self._rpc_call(rpc_url, "eth_getCode", [address, "latest"])
+        is_c = bool(code and code != "0x")
+        self._contract_cache[address] = is_c
+        return is_c
+
     async def _process_log(self, chain_id: str, chain: dict, wallet: dict, lg: dict):
         addr = wallet["address"].lower()
         token = (lg.get("address") or "").lower()
         topics = lg.get("topics") or []
         if len(topics) < 3 or not token:
             return
-        from_addr = ("0x" + topics[1][-40:]).lower()
-        if from_addr == addr:
+        sender = ("0x" + topics[1][-40:]).lower()
+        if sender == addr:
+            return
+        # Solo compras reales: tokens desde un CONTRATO (pool/router DEX).
+        # Si vienen de una EOA es airdrop/transferencia -> fuera.
+        if not await self._is_contract(chain["rpc"], sender):
             return
         if token in EXCLUDED_TOKENS.get(chain_id, set()):
             return

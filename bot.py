@@ -3,6 +3,7 @@ import json
 import os
 import re
 import sys
+import time
 
 import aiohttp
 from dotenv import load_dotenv
@@ -129,13 +130,31 @@ async def main():
         log(f"Solana RPC OK: {sol_rpc[:60]}")
 
     async def on_alert(chain, token_addr, count, score_sum, buys):
-        # Dashboard: Dexscreener + SOL price + (SOL) top holders & pump.fun data, in parallel
+        # Dashboard data in parallel
         info, sol_price, holders, pump = await asyncio.gather(
             fetch_token_info(chain, token_addr),
             fetch_sol_price() if chain == "SOL" else asyncio.sleep(0, result=None),
             get_top_holders(sol_rpc, token_addr) if chain == "SOL" else asyncio.sleep(0, result={}),
             get_pump_info(token_addr) if chain == "SOL" else asyncio.sleep(0, result={}),
         )
+
+        # --- Filtro anti "contratos genericos": solo coins frescas de launchpad ---
+        max_age_h = float(cfg.get("max_token_age_hours", 48))
+        max_fdv = float(cfg.get("max_fdv_usd", 0))
+        if info:
+            created = info.get("created_ms")
+            if created:
+                age_h = (time.time() - float(created) / 1000) / 3600
+                if age_h > max_age_h:
+                    log(f"Alert skipped ${info.get('symbol','?')} ({chain}) {token_addr[:8]}...: too old ({age_h:.0f}h > {max_age_h:.0f}h) — not a fresh launch")
+                    return
+            fdv = info.get("fdv")
+            if max_fdv and fdv and float(fdv) > max_fdv:
+                log(f"Alert skipped ${info.get('symbol','?')} ({chain}) {token_addr[:8]}...: FDV {float(fdv):,.0f} > {max_fdv:,.0f} — established token")
+                return
+        else:
+            log(f"Note: no Dexscreener data for {token_addr[:8]}... ({chain}) — fresh/unknown, alerting anyway")
+
         # Exclude the pool/pair from top holders
         pair_addr = (info or {}).get("pair_address")
         if chain == "SOL" and pair_addr and holders:

@@ -2,6 +2,8 @@
   "threshold": 5,
   "min_wallets_score": 2,
   "score_threshold": 1.76,
+  "max_token_age_hours": 48,
+  "max_fdv_usd": 100000000,
   "score_penalties": {
     "amount": 0.6,
     "names": ["superman", "martinshkreli", "vibed dev", "bwam", "devboost", "limdev", "fartdev", "kreo dev", "bundler", "boost", "pump app"]

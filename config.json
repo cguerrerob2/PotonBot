@@ -1,7 +1,7 @@
 {
   "threshold": 5,
   "min_wallets_score": 2,
-  "score_threshold": 1.76,
+  "score_threshold": 2.5,
   "max_token_age_hours": 720,
   "max_fdv_usd": 100000000,
   "min_buy_usd": 50,

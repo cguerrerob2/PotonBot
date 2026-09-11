@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timezone
 
 import aiohttp
 
@@ -37,7 +38,82 @@ async def fetch_sol_price() -> float | None:
 
 
 async def fetch_token_info(chain: str, token: str, timeout: int = 8) -> dict:
-    """Datos completos del token desde Dexscreener (par con mas liquidez de su chain)."""
+    """Datos completos del token: Dexscreener primero, GeckoTerminal como fallback (Pons/Stonks/etc)."""
+    info = await _fetch_dexscreener(chain, token, timeout)
+    if info:
+        return info
+    return await _fetch_geckoterminal(chain, token, timeout)
+
+
+GT_NETWORKS = {"SOL": "solana", "BASE": "base", "BSC": "bsc", "HOOD": "robinhood"}
+
+
+async def _fetch_geckoterminal(chain: str, token: str, timeout: int = 10) -> dict:
+    net = GT_NETWORKS.get(chain)
+    if not net:
+        return {}
+    try:
+        async with aiohttp.ClientSession() as session:
+            t_url = f"https://api.geckoterminal.com/api/v2/networks/{net}/tokens/{token}"
+            p_url = f"https://api.geckoterminal.com/api/v2/networks/{net}/tokens/{token}/pools?page=1"
+            async with session.get(t_url, timeout=aiohttp.ClientTimeout(total=timeout)) as r1:
+                t_data = await r1.json() if r1.status == 200 else {}
+            async with session.get(p_url, timeout=aiohttp.ClientTimeout(total=timeout)) as r2:
+                p_data = await r2.json() if r2.status == 200 else {}
+
+        t_attrs = ((t_data.get("data") or {}).get("attributes") or {})
+        pools = p_data.get("data") or []
+        if not pools:
+            return {}
+        best = max(pools, key=lambda p: float((p.get("attributes") or {}).get("reserve_in_usd") or 0))
+        a = best.get("attributes") or {}
+        rel = best.get("relationships") or {}
+
+        def f(x):
+            try:
+                return float(x)
+            except (TypeError, ValueError):
+                return None
+
+        vol = a.get("volume_usd") or {}
+        chg = a.get("price_change_percentage") or {}
+        txns = (a.get("transactions") or {}).get("m5") or {}
+
+        created_ms = None
+        created_raw = a.get("pool_created_at")
+        if created_raw:
+            try:
+                created_ms = datetime.fromisoformat(created_raw.replace("Z", "+00:00")).timestamp() * 1000
+            except (ValueError, TypeError):
+                pass
+
+        pool_addr = a.get("address") or ""
+        return {
+            "symbol": t_attrs.get("symbol") or "",
+            "name": t_attrs.get("name") or "",
+            "price_usd": a.get("base_token_price_usd") or t_attrs.get("price_usd"),
+            "mcap": f(a.get("market_cap_usd")) or f(a.get("fdv_usd")),
+            "fdv": f(a.get("fdv_usd")),
+            "liquidity": f(a.get("reserve_in_usd")),
+            "pair_url": f"https://www.geckoterminal.com/{net}/pools/{pool_addr}" if pool_addr else "",
+            "pair_address": pool_addr,
+            "dex_id": ((rel.get("dex") or {}).get("data") or {}).get("id") or "",
+            "vol24": f(vol.get("h24")),
+            "vol5": f(vol.get("m5")),
+            "chg5": f(chg.get("m5")),
+            "chg1h": f(chg.get("h1")),
+            "buys5": txns.get("buys"),
+            "sells5": txns.get("sells"),
+            "created_ms": created_ms,
+            "image": t_attrs.get("image_url") or "",
+            "twitter": "", "telegram": "", "web": "",
+        }
+    except Exception:
+        return {}
+
+
+async def _fetch_dexscreener(chain: str, token: str, timeout: int = 8) -> dict:
+    """Dexscreener: par con mas liquidez de su chain. {} si no hay datos."""
     slug = CHAIN_SLUGS.get(chain)
     if not slug:
         return {}

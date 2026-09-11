@@ -2,13 +2,13 @@ import time
 
 import aiohttp
 
-CHAIN_SLUGS = {"SOL": "solana", "ETH": "ethereum", "BASE": "base", "BSC": "bsc"}
+CHAIN_SLUGS = {"SOL": "solana", "BASE": "base", "BSC": "bsc", "HOOD": "robinhood"}
 
 EXPLORERS = {
     "SOL": "https://solscan.io/token/",
-    "ETH": "https://etherscan.io/token/",
     "BASE": "https://basescan.org/token/",
     "BSC": "https://bscscan.com/token/",
+    "HOOD": "https://robinhoodchain.blockscout.com/token/",
 }
 
 WSOL_MINT = "So11111111111111111111111111111111111111112"

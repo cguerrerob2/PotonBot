@@ -7,7 +7,7 @@ from .logutil import log
 
 CHAIN_COLORS = {
     "SOL": 0x9945FF,   # Solana purple
-    "ETH": 0x627EEA,   # ETH blue
+    "HOOD": 0x00C805,  # Robinhood green
     "BASE": 0x0052FF,  # Base blue
     "BSC": 0xF0B90B,   # BSC yellow
 }
@@ -43,7 +43,7 @@ class PotonBot:
     async def send_startup(self, n_sol: int, n_evm: int, threshold: int, window_min: int, rpc_ok: bool = True):
         msg = (
             f"🟢 **Poton online** — watching **{n_sol}** SOL wallets"
-            + (f" and **{n_evm}** EVM wallets (ETH/BASE/BSC)" if n_evm else "")
+            + (f" and **{n_evm}** EVM wallets (BASE/BSC/HOOD)" if n_evm else "")
             + f".\nAlert when **{threshold}+** wallets ape the same coin within **{window_min} min**,"
             + f" or **2+** smart wallets with combined score ≥ **1.76** 🧠"
             + f"\nAlerts ping: **@everyone**"
@@ -166,8 +166,9 @@ class PotonBot:
             if chain == "SOL" and txh:
                 wl.append(f"{label} `{sc:.2f}`{star} — {spent} ([tx](https://solscan.io/tx/{txh}))")
             elif txh:
-                exp_tx = {"ETH": "https://etherscan.io/tx/", "BASE": "https://basescan.org/tx/",
-                          "BSC": "https://bscscan.com/tx/"}.get(chain, "")
+                exp_tx = {"BASE": "https://basescan.org/tx/",
+                          "BSC": "https://bscscan.com/tx/",
+                          "HOOD": "https://robinhoodchain.blockscout.com/tx/"}.get(chain, "")
                 wl.append(f"{label} `{sc:.2f}`{star} — {spent} ([tx]({exp_tx}{txh}))")
             else:
                 wl.append(f"{label} `{sc:.2f}`{star} — {spent}")

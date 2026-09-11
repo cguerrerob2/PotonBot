@@ -162,7 +162,6 @@ async def main():
         window_min=cfg.get("window_minutes", 30),
         rpc_ok=rpc_ok,
     )
-
     # ---- Monitors ----
     tasks = []
     if sol_wallets:

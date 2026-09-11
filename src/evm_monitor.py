@@ -4,23 +4,18 @@ import aiohttp
 
 from .logutil import log as _log
 
-# Etherscan V2: one API key works for every chain (chainid param)
-API_URL = "https://api.etherscan.io/v2/api"
+# Etherscan V2 (ETH-like chains) + Blockscout (Robinhood Chain)
+ETHERSCAN_V2 = "https://api.etherscan.io/v2/api"
+BLOCKSCOUT_HOOD = "https://robinhoodchain.blockscout.com/api"
 
 CHAINS = {
-    "1": {"name": "ETH", "explorer": "https://etherscan.io/tx/"},
-    "8453": {"name": "BASE", "explorer": "https://basescan.org/tx/"},
-    "56": {"name": "BSC", "explorer": "https://bscscan.com/tx/"},
+    "8453": {"name": "BASE", "explorer": "https://basescan.org/tx/", "api": ETHERSCAN_V2, "needs_key": True},
+    "56": {"name": "BSC", "explorer": "https://bscscan.com/tx/", "api": ETHERSCAN_V2, "needs_key": True},
+    "4663": {"name": "HOOD", "explorer": "https://robinhoodchain.blockscout.com/tx/", "api": BLOCKSCOUT_HOOD, "needs_key": False},
 }
 
-# Stables/wrapped excluded per chain (lowercase)
+# Stables/wrapped excluded per chain (lowercase addresses)
 EXCLUDED_TOKENS = {
-    "1": {
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",  # USDC
-        "0xdac17f958d2ee523a2206206994597c13d831ec7",  # USDT
-        "0x6b175474e89094c44da98b954eedeac495271d0f",  # DAI
-        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",  # WETH
-    },
     "8453": {
         "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",  # USDC
         "0xd9aaec86b65d86f6a7b5b1b0c42ffa531710b6ca",  # USDbC
@@ -32,6 +27,13 @@ EXCLUDED_TOKENS = {
         "0xe9e7cea3dedca5984780bafc599bd69add087d56",  # BUSD
         "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",  # WBNB
     },
+    "4663": set(),  # simbolos filtrados abajo
+}
+
+# Simbolos excluidos en TODAS las chains EVM (stables/wrapped/gas tokens)
+EXCLUDED_SYMBOLS = {
+    "USDC", "USDT", "USDBC", "DAI", "WETH", "WBNB", "WBTC", "BUSD",
+    "USDG", "SPUSDG", "USDS", "USDE", "WSTETH", "STETH",
 }
 
 
@@ -67,19 +69,21 @@ class EvmMonitor:
                 await asyncio.sleep(self.interval)
 
     async def _fetch_tokentx(self, chain_id: str, address: str) -> list:
+        chain = CHAINS[chain_id]
         params = {
-            "chainid": chain_id,
             "module": "account",
             "action": "tokentx",
             "address": address,
             "page": 1,
             "offset": self.txs_limit,
             "sort": "desc",
-            "apikey": self.api_key,
         }
+        if chain["needs_key"]:
+            params["chainid"] = chain_id
+            params["apikey"] = self.api_key
         for attempt in range(3):
             try:
-                async with self.session.get(API_URL, params=params) as resp:
+                async with self.session.get(chain["api"], params=params) as resp:
                     if resp.status == 429:
                         await asyncio.sleep(2 + attempt * 3)
                         continue
@@ -151,6 +155,8 @@ class EvmMonitor:
         if (t.get("from") or "").lower() == addr:
             return
         if token in EXCLUDED_TOKENS.get(chain_id, set()):
+            return
+        if (t.get("tokenSymbol") or "").upper() in EXCLUDED_SYMBOLS:
             return
         try:
             amount = float(t.get("value", 0)) / (10 ** int(t.get("tokenDecimal", 18)))

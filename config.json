@@ -1,5 +1,5 @@
 {
-  "threshold": 5,
+  "threshold": 3,
   "min_wallets_score": 2,
   "score_threshold": 2.5,
   "max_token_age_hours": 720,
@@ -7,21 +7,35 @@
   "min_buy_usd": 50,
   "score_penalties": {
     "amount": 0.6,
-    "names": ["superman", "martinshkreli", "vibed dev", "bwam", "devboost", "limdev", "fartdev", "kreo dev", "bundler", "boost", "pump app"]
+    "names": [
+      "superman",
+      "martinshkreli",
+      "vibed dev",
+      "bwam",
+      "devboost",
+      "limdev",
+      "fartdev",
+      "kreo dev",
+      "bundler",
+      "boost",
+      "pump app"
+    ]
   },
   "window_minutes": 30,
   "alert_cooldown_minutes": 10,
   "realert_extra_wallets": 2,
   "solana": {
-    "poll_interval_sec": 28,
-    "wallets_per_cycle": 8,
-    "signatures_limit": 8,
-    "max_txs_per_wallet_cycle": 5
+    "subs_per_connection": 100,
+    "max_rpc_per_sec": 8,
+    "max_tx_age_sec": 300,
+    "catchup_on_reconnect": true,
+    "signatures_page": 100
   },
   "evm": {
     "enabled": true,
     "poll_interval_sec": 18,
     "wallets_per_cycle": 5,
     "txs_limit": 10
-  }
+  },
+  "skip_muted_wallets": true
 }

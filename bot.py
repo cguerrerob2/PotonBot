@@ -16,9 +16,12 @@ from src.discord_bot import PotonBot
 from src.dexscreener import fetch_token_info, fetch_sol_price
 from src.solana_extras import get_top_holders, get_pump_info
 from src.logutil import log as _log
+from src.traders import annotate_traders
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_SOL_RPC = "https://api.mainnet-beta.solana.com"
+DEFAULT_SCORE = 0.3
+ALERT_FLAGS = ("alertsOnToast", "alertsOnFeed", "alertsOnBubble")
 
 
 def normalize_rpc(url: str) -> tuple[str, str | None]:
@@ -77,6 +80,11 @@ def setup_file_logging():
                 except Exception:
                     pass
 
+    for stream in (sys.__stdout__, sys.__stderr__):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")  # Windows console chokes on emojis
+        except Exception:
+            pass
     sys.stdout = Tee(sys.__stdout__, logfile)
     sys.stderr = Tee(sys.__stderr__, logfile)
 
@@ -90,6 +98,25 @@ def load_json(path: str):
         return json.load(f)
 
 
+def load_wallets(path: str) -> list:
+    """Accepts the tracker export as-is ('name' + alert flags) or the old format ('rename')."""
+    wallets = []
+    for w in load_json(path):
+        addr = (w.get("address") or "").strip()
+        if not addr:
+            continue
+        wallets.append({
+            **w,
+            "address": addr,
+            "rename": (w.get("rename") or w.get("name") or addr[:6]).strip(),
+            "emoji": (w.get("emoji") or "").strip(),
+            "score": float(w.get("score", DEFAULT_SCORE)),
+            # every alert switched off in the tracker = muted wallet
+            "muted": all(w.get(k) is False for k in ALERT_FLAGS),
+        })
+    return wallets
+
+
 async def main():
     load_dotenv(os.path.join(BASE_DIR, ".env"))
 
@@ -98,6 +125,7 @@ async def main():
     ping_user = os.getenv("DISCORD_PING_USER_ID", "").strip()
     etherscan_key = os.getenv("ETHERSCAN_API_KEY", "").strip()
     sol_rpc_env = os.getenv("SOLANA_RPC_URL", "").strip()
+    sol_ws_env = os.getenv("SOLANA_WS_URL", "").strip() or None
 
     if not token or not channel_id or not ping_user:
         log("Missing DISCORD_TOKEN, DISCORD_CHANNEL_ID or DISCORD_PING_USER_ID.")
@@ -105,9 +133,14 @@ async def main():
         sys.exit(1)
 
     cfg = load_json(os.path.join(BASE_DIR, "config.json"))
-    wallets = load_json(os.path.join(BASE_DIR, "wallets.json"))
+    wallets = load_wallets(os.path.join(BASE_DIR, "wallets.json"))
+    muted = [w for w in wallets if w["muted"]]
+    if muted and cfg.get("skip_muted_wallets", True):
+        wallets = [w for w in wallets if not w["muted"]]
+        log(f"Skipping {len(muted)} muted wallets (all alerts off in wallets.json)")
+    wallets = annotate_traders(wallets)
 
-    # Classify wallets: 0x... -> EVM (ETH/BASE/BSC), everything else -> Solana
+    # Classify wallets: 0x... -> EVM, everything else -> Solana
     sol_wallets = [w for w in wallets if not w["address"].startswith("0x")]
     evm_wallets = [w for w in wallets if w["address"].startswith("0x")]
     log(f"Wallets loaded: {len(sol_wallets)} SOL, {len(evm_wallets)} EVM")
@@ -159,6 +192,8 @@ async def main():
         min_buy_usd = float(cfg.get("min_buy_usd", 50))
         token_price = (info or {}).get("price_usd")
         for b in buys:
+            if b.get("usd") is not None:
+                continue  # paid in stables: exact USD already known
             usd = None
             if chain == "SOL" and b.get("sol_spent") and sol_price:
                 usd = float(b["sol_spent"]) * float(sol_price)
@@ -202,13 +237,14 @@ async def main():
         n_sol=len(sol_wallets),
         n_evm=len(evm_wallets) if (evm_wallets and etherscan_key) else 0,
         threshold=cfg.get("threshold", 5),
+        score_threshold=cfg.get("score_threshold", 2.5),
         window_min=cfg.get("window_minutes", 30),
         rpc_ok=rpc_ok,
     )
     # ---- Monitors ----
     tasks = []
     if sol_wallets:
-        sol = SolanaMonitor(sol_rpc, sol_wallets, tracker, state, cfg.get("solana", {}))
+        sol = SolanaMonitor(sol_rpc, sol_wallets, tracker, state, cfg.get("solana", {}), ws_url=sol_ws_env)
         tasks.append(asyncio.create_task(sol.run()))
 
     if evm_wallets and cfg.get("evm", {}).get("enabled", True):

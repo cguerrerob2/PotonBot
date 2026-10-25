@@ -2,7 +2,10 @@ import asyncio
 
 import discord
 
-from .dexscreener import EXPLORERS, CHAIN_SLUGS, fmt_usd, fmt_amount, fmt_age
+from .dexscreener import (
+    EXPLORERS, CHAIN_SLUGS, fetch_sol_price, fetch_token_info,
+    fmt_usd, fmt_amount, fmt_age,
+)
 from .logutil import log
 
 CHAIN_COLORS = {
@@ -42,25 +45,26 @@ class PotonBot:
             self._channel = await self.client.fetch_channel(self.channel_id)
         return task
 
-    async def send_startup(self, n_sol: int, n_evm: int, threshold: int, window_min: int, rpc_ok: bool = True):
+    async def send_startup(self, n_sol: int, n_evm: int, threshold: int,
+                           score_threshold: float, window_min: int, rpc_ok: bool = True):
         msg = (
             f"🟢 **Poton online** — watching **{n_sol}** SOL wallets"
             + (f" and **{n_evm}** EVM wallets (BASE/BSC/HOOD)" if n_evm else "")
             + f".\nAlert when **{threshold}+** wallets ape the same coin within **{window_min} min**,"
-            + f" or **2+** smart wallets with combined score ≥ **1.76** 🧠"
-            + f"\nAlerts ping: **@everyone**"
+            + f" or **2+** smart traders with combined score ≥ **{score_threshold:g}** 🧠"
+            + f"\n⚡ Realtime (WebSocket). Pings <@{self.ping_user_id}> **only on buy alerts**."
         )
         if not rpc_ok:
             msg += "\n⚠️ **Solana RPC DOWN/invalid — SOL monitor can't work. Fix `SOLANA_RPC_URL`!**"
         try:
-            await self._channel.send(msg)
+            await self._channel.send(msg, allowed_mentions=discord.AllowedMentions.none())
         except Exception as e:
             log("DISCORD", f"Could not send startup message: {e}")
 
     async def send_rpc_warning(self, rpc_url: str):
         try:
             await self._channel.send(
-                f"⚠️ @everyone Solana RPC unreachable: `{rpc_url[:60]}`\n"
+                f"⚠️ Solana RPC unreachable: `{rpc_url[:60]}`\n"
                 "No buys will be detected until you fix `SOLANA_RPC_URL`. "
                 "Helius format: `https://mainnet.helius-rpc.com/?api-key=YOUR_KEY`"
             )
@@ -69,8 +73,8 @@ class PotonBot:
 
     # ---------------- ALERT DASHBOARD ----------------
 
-    async def send_alert(self, chain: str, token: str, count: int, score_sum: float,
-                         buys: list, info: dict, extra: dict | None = None):
+    def build_embed(self, chain: str, token: str, count: int, score_sum: float,
+                    buys: list, info: dict, extra: dict | None = None):
         extra = extra or {}
         symbol = info.get("symbol") or (buys[-1].get("symbol") if buys else "") or "?"
         name = info.get("name") or symbol
@@ -163,24 +167,26 @@ class PotonBot:
         for b in buys:
             emoji = (b.get("emoji") or "").strip()
             label = f"{emoji} **{b['name']}**" if emoji else f"**{b['name']}**"
+            if int(b.get("wallets_count", 1)) > 1:
+                label += f" ×{int(b['wallets_count'])}"
             sc = float(b.get("score", 0.3))
-            star = "⭐" if sc >= 0.9 else ""
+            score_label = f"⭐ `{sc:.2f}`"
             usd = usd_of.get(b["wallet"])
             spent = f"**${usd:,.0f}**" if usd is not None else f"`{fmt_amount(b.get('amount'))}`"
             txh = b.get("tx_hash") or ""
             if chain == "SOL" and txh:
-                wl.append(f"{label} `{sc:.2f}`{star} — {spent} ([tx](https://solscan.io/tx/{txh}))")
+                wl.append(f"{label} {score_label} — {spent} ([tx](https://solscan.io/tx/{txh}))")
             elif txh:
                 exp_tx = {"BASE": "https://basescan.org/tx/",
                           "BSC": "https://bscscan.com/tx/",
                           "HOOD": "https://robinhoodchain.blockscout.com/tx/"}.get(chain, "")
-                wl.append(f"{label} `{sc:.2f}`{star} — {spent} ([tx]({exp_tx}{txh}))")
+                wl.append(f"{label} {score_label} — {spent} ([tx]({exp_tx}{txh}))")
             else:
-                wl.append(f"{label} `{sc:.2f}`{star} — {spent}")
+                wl.append(f"{label} {score_label} — {spent}")
         wallets_txt = "\n".join(wl)
         if len(wallets_txt) > 1000:
             wallets_txt = wallets_txt[:1000] + "\n..."
-        embed.add_field(name=f"👀 {count} WALLETS IN · SCORE {score_sum:.2f}", value=wallets_txt or "?", inline=False)
+        embed.add_field(name=f"👀 {count} TRADERS IN · SCORE {score_sum:.2f}", value=wallets_txt or "?", inline=False)
 
         # --- CA ---
         embed.add_field(name="CA", value=f"`{token}`", inline=False)
@@ -210,12 +216,48 @@ class PotonBot:
         if chain == "SOL":
             embed.add_field(name="📈 TIP:", value=f"Trade on [Axiom](https://axiom.trade/meme/{token})", inline=False)
 
-        embed.set_footer(text=f"Poton 🚨 · {count} wallets · score {score_sum:.2f} · {chain}")
+        embed.set_footer(text=f"Poton 🚨 · {count} traders · score {score_sum:.2f} · {chain}")
 
-        # Content: "CA @everyone"
-        content = f"{token} @everyone"
+        return embed
+
+    async def send_alert(self, chain: str, token: str, count: int, score_sum: float,
+                         buys: list, info: dict, extra: dict | None = None):
+        embed = self.build_embed(chain, token, count, score_sum, buys, info, extra)
+        view = DashboardView(self, chain, token, count, score_sum, buys, extra or {})
+        # The only message that pings: a buy alert, and only the configured user
+        content = f"{token} <@{self.ping_user_id}>"
+        mentions = discord.AllowedMentions(everyone=False, roles=False, users=True)
         try:
-            await self._channel.send(content=content, embed=embed)
-            log("ALERT", f"{count} wallets -> ${symbol} ({chain}) {token}")
+            await self._channel.send(content=content, embed=embed, view=view, allowed_mentions=mentions)
+            log("ALERT", f"{count} traders -> ${info.get('symbol') or '?'} ({chain}) {token}")
         except Exception as e:
             log("DISCORD", f"Error sending alert: {e}")
+
+
+class DashboardView(discord.ui.View):
+    def __init__(self, bot: PotonBot, chain: str, token: str, count: int,
+                 score_sum: float, buys: list, extra: dict):
+        super().__init__(timeout=86400)
+        self.bot = bot
+        self.chain = chain
+        self.token = token
+        self.count = count
+        self.score_sum = score_sum
+        self.buys = buys
+        self.extra = extra
+
+    @discord.ui.button(label="Refresh", style=discord.ButtonStyle.primary, emoji="🔄")
+    async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer()
+        info = await fetch_token_info(self.chain, self.token)
+        extra = dict(self.extra)
+        if self.chain == "SOL":
+            extra["sol_price"] = await fetch_sol_price()
+        embed = self.bot.build_embed(
+            self.chain, self.token, self.count, self.score_sum, self.buys, info, extra)
+        await interaction.edit_original_response(embed=embed, view=self)
+
+    @discord.ui.button(label="Copy CA", style=discord.ButtonStyle.secondary, emoji="📋")
+    async def copy_ca(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message(
+            f"Contract address:\n```{self.token}```", ephemeral=True)

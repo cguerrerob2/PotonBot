@@ -176,6 +176,8 @@ class EvmMonitor:
             "symbol": symbol,
             "tx_hash": lg.get("transactionHash") or "",
             "score": wallet.get("score", 0.3),
+            "trader_key": wallet.get("trader_key"),
+            "trader_name": wallet.get("trader_name"),
         })
         n = abs(count)
         log(f"[{chain['name']}] {wallet.get('emoji','')} {wallet['rename']} (score {wallet.get('score', 0.3):.2f}) received {symbol} ({n} wallets, combined score {score_sum:.2f})")
@@ -339,6 +341,8 @@ class EvmMonitor:
             "symbol": t.get("tokenSymbol") or "",
             "tx_hash": t.get("hash") or "",
             "score": wallet.get("score", 0.3),
+            "trader_key": wallet.get("trader_key"),
+            "trader_name": wallet.get("trader_name"),
         })
         n = abs(count)
         log(f"[{chain['name']}] {wallet.get('emoji','')} {wallet['rename']} (score {wallet.get('score', 0.3):.2f}) received {t.get('tokenSymbol','?')} ({n} wallets, combined score {score_sum:.2f})")

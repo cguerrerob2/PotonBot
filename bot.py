@@ -14,7 +14,7 @@ from src.solana_monitor import SolanaMonitor
 from src.evm_monitor import EvmMonitor
 from src.discord_bot import PotonBot
 from src.dexscreener import fetch_token_info, fetch_sol_price
-from src.solana_extras import get_top_holders, get_pump_info
+from src.solana_extras import get_top_holders, get_pump_info, summarize_holders
 from src.logutil import log as _log
 from src.traders import annotate_traders
 
@@ -217,7 +217,7 @@ async def main():
         # Exclude the pool/pair from top holders
         pair_addr = (info or {}).get("pair_address")
         if chain == "SOL" and pair_addr and holders:
-            holders["top5"] = [(a, p) for a, p in holders["top5"] if a != pair_addr][:5]
+            holders = summarize_holders(holders["all"], {pair_addr})
         extra = {"holders": holders, "pump": pump, "sol_price": sol_price}
         await bot.send_alert(chain, token_addr, count, score_sum, buys, info, extra)
 

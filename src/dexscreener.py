@@ -78,6 +78,7 @@ async def _fetch_geckoterminal(chain: str, token: str, timeout: int = 10) -> dic
         vol = a.get("volume_usd") or {}
         chg = a.get("price_change_percentage") or {}
         txns = (a.get("transactions") or {}).get("m5") or {}
+        txns1h = (a.get("transactions") or {}).get("h1") or {}
 
         created_ms = None
         created_raw = a.get("pool_created_at")
@@ -104,6 +105,9 @@ async def _fetch_geckoterminal(chain: str, token: str, timeout: int = 10) -> dic
             "chg1h": f(chg.get("h1")),
             "buys5": txns.get("buys"),
             "sells5": txns.get("sells"),
+            "vol1h": f(vol.get("h1")),
+            "buys1h": txns1h.get("buys"),
+            "sells1h": txns1h.get("sells"),
             "created_ms": created_ms,
             "image": t_attrs.get("image_url") or "",
             "twitter": "", "telegram": "", "web": "",
@@ -134,6 +138,7 @@ async def _fetch_dexscreener(chain: str, token: str, timeout: int = 8) -> dict:
         volume = best.get("volume") or {}
         txns = best.get("txns") or {}
         m5 = txns.get("m5") or {}
+        h1 = txns.get("h1") or {}
         price_change = best.get("priceChange") or {}
 
         twitter = ""
@@ -165,6 +170,9 @@ async def _fetch_dexscreener(chain: str, token: str, timeout: int = 8) -> dict:
             "chg1h": price_change.get("h1"),
             "buys5": m5.get("buys"),
             "sells5": m5.get("sells"),
+            "vol1h": volume.get("h1"),
+            "buys1h": h1.get("buys"),
+            "sells1h": h1.get("sells"),
             "created_ms": best.get("pairCreatedAt"),
             "image": info.get("imageUrl") or "",
             "twitter": twitter,
@@ -187,6 +195,22 @@ def fmt_usd(value) -> str:
     if v >= 1_000:
         return f"{v/1_000:.1f}K"
     return f"{v:,.2f}"
+
+
+def fmt_price(value) -> str:
+    """Token price with ~5 significant digits: 0.000021943, 0.041237, 1.2345."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return "?"
+    if v <= 0:
+        return "0"
+    if v >= 1:
+        return f"{v:,.4f}"
+    decimals = 1
+    while v * 10 ** decimals < 1:
+        decimals += 1
+    return f"{v:.{decimals + 4}f}"
 
 
 def fmt_amount(value) -> str:

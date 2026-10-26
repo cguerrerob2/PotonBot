@@ -4,18 +4,40 @@ import discord
 
 from .dexscreener import (
     EXPLORERS, CHAIN_SLUGS, fetch_sol_price, fetch_token_info,
-    fmt_usd, fmt_amount, fmt_age,
+    fmt_usd, fmt_amount, fmt_age, fmt_price,
 )
 from .logutil import log
 
-CHAIN_COLORS = {
-    "SOL": 0x9945FF,   # Solana purple
-    "HOOD": 0x00C805,  # Robinhood green
-    "BASE": 0x0052FF,  # Base blue
-    "BSC": 0xF0B90B,   # BSC yellow
+RICK_GREEN = 0xB5E36B  # the lime bar of Rick's cards
+CHAIN_NAMES = {"SOL": "Solana", "HOOD": "Robinhood", "BASE": "Base", "BSC": "BSC"}
+CHAIN_ICONS = {"SOL": "🟣", "HOOD": "🟢", "BASE": "🔵", "BSC": "🟡"}
+CHAIN_QUOTES = {"SOL": "SOL", "HOOD": "ETH", "BASE": "ETH", "BSC": "BNB"}
+DEX_NAMES = {
+    "pumpfun": "Pump 🔥", "pumpswap": "PumpSwap", "raydium": "Raydium", "launchlab": "LaunchLab",
+    "meteora": "Meteora", "meteoradbc": "Meteora DBC", "orca": "Orca", "moonshot": "Moonshot",
+    "uniswap": "Uniswap", "aerodrome": "Aerodrome", "pancakeswap": "PancakeSwap",
+}
+TX_EXPLORERS = {
+    "SOL": "https://solscan.io/tx/",
+    "BASE": "https://basescan.org/tx/",
+    "BSC": "https://bscscan.com/tx/",
+    "HOOD": "https://robinhoodchain.blockscout.com/tx/",
 }
 
 GMGN_SLUGS = {"SOL": "sol", "BASE": "base", "BSC": "bsc", "HOOD": "robinhood"}
+
+
+def _short(value) -> str:
+    """Rick-style compact USD: 190K, 21.5K, 1.54M."""
+    out = fmt_usd(value)
+    return out[:-3] + out[-1] if out[-3:-1] == ".0" and out[-1] in "KMB" else out
+
+
+def _num(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
 
 
 class PotonBot:
@@ -71,78 +93,108 @@ class PotonBot:
         except Exception as e:
             log("DISCORD", f"Could not send RPC warning: {e}")
 
-    # ---------------- ALERT DASHBOARD ----------------
+    # ---------------- ALERT CARD (Rick-style) ----------------
+
+    @staticmethod
+    def build_header(chain: str, token: str, info: dict, buys: list) -> str:
+        """First line of the message, like Rick: 💊 Name [FDV/1h%] - SYMBOL/SOL"""
+        symbol = info.get("symbol") or (buys[-1].get("symbol") if buys else "") or "?"
+        name = info.get("name") or symbol
+        chg1h = _num(info.get("chg1h"))
+        chg = f"{chg1h:+.1f}%".replace("+", "") if chg1h is not None else "?"
+        quote = CHAIN_QUOTES.get(chain, chain)
+        return f"💊 **{name} [{_short(info.get('fdv'))}/{chg}] - {symbol}/{quote}**"
 
     def build_embed(self, chain: str, token: str, count: int, score_sum: float,
                     buys: list, info: dict, extra: dict | None = None):
         extra = extra or {}
-        symbol = info.get("symbol") or (buys[-1].get("symbol") if buys else "") or "?"
-        name = info.get("name") or symbol
         slug = CHAIN_SLUGS.get(chain, "")
-        pair_url = info.get("pair_url") or (EXPLORERS.get(chain, "") + token)
-
-        embed = discord.Embed(
-            title=f"🚀💊 {name} - ${symbol}",
-            url=pair_url,
-            color=CHAIN_COLORS.get(chain, 0xFF0000),
-        )
-        if info.get("image"):
-            embed.set_thumbnail(url=info["image"])
-        elif slug:
-            # fallback: CDN de Dexscreener sirve el icono por direccion aunque el par no traiga imagen
-            embed.set_thumbnail(url=f"https://dd.dexscreener.com/ds-data/tokens/{slug}/{token}.png")
-
+        pump = extra.get("pump") or {}
         lines = []
 
-        # --- pump.fun / DEX line ---
-        pump = extra.get("pump") or {}
-        if chain == "SOL" and pump:
+        # --- Chain @ venue ---
+        dex_id = (info.get("dex_id") or "").lower()
+        if chain == "SOL" and (pump or dex_id == "pumpfun"):
             if pump.get("complete"):
-                lines.append(f"🎓 **Migrated** from Pump → {info.get('dex_id', '?')}")
+                venue = f"{DEX_NAMES.get(dex_id, dex_id.title() or 'PumpSwap')} 🎓"
             elif pump.get("progress") is not None:
-                lines.append(f"⏳ **{pump['progress']:.0f}%** @ Pump")
+                venue = f"Pump 🔥 `{pump['progress']:.0f}%`"
             else:
-                lines.append("⏳ Bonding curve @ **Pump**")
-        elif info.get("dex_id"):
-            lines.append(f"📍 DEX: **{info['dex_id']}** ({chain})")
-
-        # --- FDV / MCap ---
-        fdv = fmt_usd(info.get("fdv"))
-        mcap = fmt_usd(info.get("mcap"))
-        if fdv == mcap:
-            lines.append(f"💎 FDV: **{fdv}**")
+                venue = "Pump 🔥"
         else:
-            lines.append(f"💎 FDV: **{fdv}** · MCap: **{mcap}**")
+            venue = DEX_NAMES.get(dex_id, dex_id.title() or "?")
+        lines.append(f"{CHAIN_ICONS.get(chain, '🔗')} {CHAIN_NAMES.get(chain, chain)} @ {venue}")
 
-        # --- Volume / age ---
-        vol24 = fmt_usd(info.get("vol24"))
-        age = fmt_age(info.get("created_ms"))
-        lines.append(f"📊 Vol 24h: **{vol24}** · Age: **{age}**")
+        # --- Price / FDV / Liq ---
+        lines.append(f"💰 USD: `{fmt_price(info.get('price_usd'))}`")
+        fdv, mcap = _short(info.get("fdv")), _short(info.get("mcap"))
+        lines.append(f"💎 FDV: `{fdv}`" + (f" · MC: `{mcap}`" if mcap not in (fdv, "?") else ""))
+        liq, fdv_n = _num(info.get("liquidity")), _num(info.get("fdv"))
+        ratio = f" `[x{fdv_n / liq:.0f}]`" if liq and fdv_n else ""
+        lines.append(f"💦 Liq: `{_short(liq)}`{ratio}")
 
-        # --- 5M stats ---
-        if info.get("vol5") is not None or info.get("buys5") is not None:
-            v5 = fmt_usd(info.get("vol5"))
-            chg5 = info.get("chg5")
-            chg5_txt = f"{float(chg5):+.1f}%" if chg5 is not None else "?"
-            b5 = info.get("buys5") or 0
-            s5 = info.get("sells5") or 0
-            lines.append(f"📈 5M: **{v5}** · **{chg5_txt}** 🟢 {b5} 🔴 {s5}")
+        # --- Volume / age / 1H ---
+        lines.append(f"📊 Vol: `{_short(info.get('vol24'))}` · Age: `{fmt_age(info.get('created_ms'))}`")
+        chg1h = _num(info.get("chg1h"))
+        if chg1h is not None or info.get("buys1h") is not None:
+            icon = "💩" if (chg1h or 0) < 0 else "🚀"
+            chg = f"{chg1h:+.1f}%" if chg1h is not None else "?"
+            lines.append(f"{icon} 1H: `{chg}` 🅑 `{fmt_amount(info.get('buys1h') or 0)}` "
+                         f"Ⓢ `{fmt_amount(info.get('sells1h') or 0)}`")
 
-        # --- Top holders (SOL) ---
+        # --- Holders / dev ---
         th = extra.get("holders") or {}
         if th.get("top5"):
-            pcts = "·".join(f"{p:.1f}" for _, p in th["top5"])
-            lines.append(f"👥 TH: {pcts} **[{th['sum10']:.0f}%]**")
-
-        # --- Dev ---
+            lines.append("")
+            pcts = "·".join(f"[{p:.1f}](https://solscan.io/account/{a})" for a, p in th["top5"])
+            lines.append(f"👥 TH: {pcts} `[{th['sum10']:.0f}%]`")
         if pump.get("creator"):
-            lines.append(f"🧑‍💻 DEV: `{pump['creator']}`")
+            c = pump["creator"]
+            lines.append(f"👨‍💻 Dev: [{c[:4]}…{c[-4:]}](https://solscan.io/account/{c})")
 
-        # --- USD bought per wallet (SOL: exact via SOL spent; EVM: amount x price) ---
+        # --- Chart / More ---
+        lines.append("")
+        charts = []
+        if slug:
+            charts.append(f"[DEX](https://dexscreener.com/{slug}/{token})")
+        pair = info.get("pair_address")
+        if chain == "SOL" and pair:
+            charts.append(f"[DEF](https://www.defined.fi/sol/{pair})")
+        if charts:
+            lines.append("💹 Chart: " + " · ".join(charts))
+        more = []
+        if chain == "SOL":
+            more.append(f"[BM](https://app.bubblemaps.io/sol/token/{token})")
+        if info.get("web"):
+            more.append(f"[Web]({info['web']})")
+        if info.get("twitter"):
+            more.append(f"[𝕏]({info['twitter']})")
+        if info.get("telegram"):
+            more.append(f"[TG]({info['telegram']})")
+        if more:
+            lines.append("🧰 More: " + " · ".join(more))
+
+        # --- CA + trade links ---
+        lines.append("")
+        lines.append(f"`{token}`")
+        trade = []
+        gmgn_slug = GMGN_SLUGS.get(chain)
+        if gmgn_slug:
+            trade.append(f"[GMG](https://gmgn.ai/{gmgn_slug}/token/{token})")
+        if chain == "SOL":
+            trade.append(f"[PHO](https://photon-sol.tinyastro.io/en/lp/{token})")
+            trade.append(f"[AXI](https://axiom.trade/meme/{token})")
+        exp = EXPLORERS.get(chain)
+        if exp:
+            trade.append(f"[EXP]({exp}{token})")
+        trade.append(f"[TW](https://x.com/search?q={token}&f=live)")
+        lines.append("·".join(trade))
+
+        # --- Who aped (instead of Rick's "You are first") ---
         sol_price = extra.get("sol_price")
         token_price = info.get("price_usd")
         total_usd = 0.0
-        usd_of = {}
+        wl = []
         for b in buys:
             usd = None
             if b.get("usd") is not None:
@@ -150,82 +202,33 @@ class PotonBot:
             elif chain == "SOL" and b.get("sol_spent") and sol_price:
                 usd = float(b["sol_spent"]) * float(sol_price)
             elif token_price and b.get("amount"):
-                try:
-                    usd = float(b["amount"]) * float(token_price)
-                except (TypeError, ValueError):
-                    usd = None
-            usd_of[b["wallet"]] = usd
+                usd = (_num(b["amount"]) or 0) * (_num(token_price) or 0) or None
             if usd:
                 total_usd += usd
-        if total_usd > 0:
-            lines.append(f"💰 Total aped: **{fmt_usd(total_usd)}**")
-
-        embed.description = "\n".join(lines)
-
-        # --- Wallets in (score + USD) ---
-        wl = []
-        for b in buys:
             emoji = (b.get("emoji") or "").strip()
             label = f"{emoji} **{b['name']}**" if emoji else f"**{b['name']}**"
             if int(b.get("wallets_count", 1)) > 1:
                 label += f" ×{int(b['wallets_count'])}"
-            sc = float(b.get("score", 0.3))
-            score_label = f"⭐ `{sc:.2f}`"
-            usd = usd_of.get(b["wallet"])
-            spent = f"**${usd:,.0f}**" if usd is not None else f"`{fmt_amount(b.get('amount'))}`"
+            spent = f"`${usd:,.0f}`" if usd is not None else f"`{fmt_amount(b.get('amount'))}`"
             txh = b.get("tx_hash") or ""
-            if chain == "SOL" and txh:
-                wl.append(f"{label} {score_label} — {spent} ([tx](https://solscan.io/tx/{txh}))")
-            elif txh:
-                exp_tx = {"BASE": "https://basescan.org/tx/",
-                          "BSC": "https://bscscan.com/tx/",
-                          "HOOD": "https://robinhoodchain.blockscout.com/tx/"}.get(chain, "")
-                wl.append(f"{label} {score_label} — {spent} ([tx]({exp_tx}{txh}))")
-            else:
-                wl.append(f"{label} {score_label} — {spent}")
+            tx_url = f"{TX_EXPLORERS.get(chain, '')}{txh}" if txh else ""
+            wl.append(f"{label} ⭐`{float(b.get('score', 0.3)):.2f}` {spent}" + (f" [tx]({tx_url})" if tx_url else ""))
+        lines.append("")
+        aped = f" · `${_short(total_usd)}` aped" if total_usd > 0 else ""
+        lines.append(f"👀 **{count} trader{'s' if count != 1 else ''} in** @ `{fdv}`{aped} · score `{score_sum:.2f}`")
         wallets_txt = "\n".join(wl)
-        if len(wallets_txt) > 1000:
-            wallets_txt = wallets_txt[:1000] + "\n..."
-        embed.add_field(name=f"👀 {count} TRADERS IN · SCORE {score_sum:.2f}", value=wallets_txt or "?", inline=False)
+        if len(wallets_txt) > 1500:
+            wallets_txt = wallets_txt[:1500] + "\n..."
+        lines.append(wallets_txt)
 
-        # --- CA ---
-        embed.add_field(name="CA", value=f"`{token}`", inline=False)
-
-        # --- Links ---
-        links = []
-        if slug:
-            links.append(f"[DEX](https://dexscreener.com/{slug}/{token})")
-        gmgn_slug = GMGN_SLUGS.get(chain)
-        if chain == "SOL":
-            links.append(f"[AXI](https://axiom.trade/meme/{token})")
-            links.append(f"[PHO](https://photon-sol.tinyastro.io/en/lp/{token})")
-        if gmgn_slug:
-            links.append(f"[GMGN](https://gmgn.ai/{gmgn_slug}/token/{token})")
-        exp = EXPLORERS.get(chain)
-        if exp:
-            links.append(f"[EXP]({exp}{token})")
-        if info.get("twitter"):
-            links.append(f"[X]({info['twitter']})")
-        if info.get("web"):
-            links.append(f"[Web]({info['web']})")
-        if info.get("telegram"):
-            links.append(f"[TG]({info['telegram']})")
-        if links:
-            embed.add_field(name="🔗 Links", value=" · ".join(links), inline=False)
-
-        if chain == "SOL":
-            embed.add_field(name="📈 TIP:", value=f"Trade on [Axiom](https://axiom.trade/meme/{token})", inline=False)
-
-        embed.set_footer(text=f"Poton 🚨 · {count} traders · score {score_sum:.2f} · {chain}")
-
-        return embed
+        return discord.Embed(description="\n".join(lines), color=RICK_GREEN)
 
     async def send_alert(self, chain: str, token: str, count: int, score_sum: float,
                          buys: list, info: dict, extra: dict | None = None):
         embed = self.build_embed(chain, token, count, score_sum, buys, info, extra)
         view = DashboardView(self, chain, token, count, score_sum, buys, extra or {})
         # The only message that pings: a buy alert, for everyone in the channel
-        content = f"{token} @everyone"
+        content = f"{self.build_header(chain, token, info, buys)} @everyone"
         mentions = discord.AllowedMentions(everyone=True, roles=False, users=False)
         try:
             await self._channel.send(content=content, embed=embed, view=view, allowed_mentions=mentions)
@@ -235,6 +238,8 @@ class PotonBot:
 
 
 class DashboardView(discord.ui.View):
+    """Rick's buttons: ❌ (delete) · 📋 Copy CA · ♻️ Refresh."""
+
     def __init__(self, bot: PotonBot, chain: str, token: str, count: int,
                  score_sum: float, buys: list, extra: dict):
         super().__init__(timeout=86400)
@@ -246,7 +251,18 @@ class DashboardView(discord.ui.View):
         self.buys = buys
         self.extra = extra
 
-    @discord.ui.button(label="Refresh", style=discord.ButtonStyle.primary, emoji="🔄")
+    @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="❌")
+    async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.defer()
+        await interaction.message.delete()
+        self.stop()
+
+    @discord.ui.button(label="Copy CA", style=discord.ButtonStyle.secondary, emoji="📋")
+    async def copy_ca(self, interaction: discord.Interaction, button: discord.ui.Button):
+        # Plain CA (no code block) so a long-press copies it cleanly on mobile
+        await interaction.response.send_message(self.token, ephemeral=True)
+
+    @discord.ui.button(label="Refresh", style=discord.ButtonStyle.secondary, emoji="♻️")
     async def refresh(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.defer()
         info = await fetch_token_info(self.chain, self.token)
@@ -255,9 +271,7 @@ class DashboardView(discord.ui.View):
             extra["sol_price"] = await fetch_sol_price()
         embed = self.bot.build_embed(
             self.chain, self.token, self.count, self.score_sum, self.buys, info, extra)
-        await interaction.edit_original_response(embed=embed, view=self)
-
-    @discord.ui.button(label="Copy CA", style=discord.ButtonStyle.secondary, emoji="📋")
-    async def copy_ca(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message(
-            f"Contract address:\n```{self.token}```", ephemeral=True)
+        content = f"{self.bot.build_header(self.chain, self.token, info, self.buys)} @everyone"
+        await interaction.edit_original_response(
+            content=content, embed=embed, view=self,
+            allowed_mentions=discord.AllowedMentions.none())

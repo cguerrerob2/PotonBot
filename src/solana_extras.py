@@ -24,10 +24,18 @@ async def _rpc(session: aiohttp.ClientSession, rpc_url: str, method: str, params
         return None
 
 
+def summarize_holders(holders: list, exclude: set | None = None) -> dict:
+    holders = [(a, p) for a, p in holders if a not in (exclude or set())]
+    if not holders:
+        return {}
+    return {"all": holders, "top5": holders[:5], "sum10": sum(p for _, p in holders[:10])}
+
+
 async def get_top_holders(rpc_url: str, mint: str, exclude: set | None = None) -> dict:
     """
-    Top token holders via RPC.
-    Returns {"top5": [(addr, pct)...], "sum10": pct} or {} on failure.
+    Top token holders via RPC, by OWNER wallet (token accounts resolved to their owner,
+    so a pool's vault shows up as the pool address and can be excluded).
+    Returns {"all": [(owner, pct)...], "top5": [...], "sum10": pct} or {} on failure.
     """
     exclude = (exclude or set()) | KNOWN_NON_HOLDERS
     try:
@@ -41,9 +49,19 @@ async def get_top_holders(rpc_url: str, mint: str, exclude: set | None = None) -
         total = float((supply_res.get("value") or {}).get("uiAmountString") or 0)
         if total <= 0:
             return {}
+        accounts = largest_res.get("value") or []
+        owners = {}
+        if accounts:
+            async with aiohttp.ClientSession() as session:
+                parsed = await _rpc(session, rpc_url, "getMultipleAccounts",
+                                    [[a.get("address") for a in accounts], {"encoding": "jsonParsed"}])
+            for acc, info in zip(accounts, (parsed or {}).get("value") or []):
+                owner = ((((info or {}).get("data") or {}).get("parsed") or {}).get("info") or {}).get("owner")
+                if owner:
+                    owners[acc.get("address")] = owner
         holders = []
-        for acc in largest_res.get("value") or []:
-            addr = acc.get("address")
+        for acc in accounts:
+            addr = owners.get(acc.get("address"), acc.get("address"))
             if addr in exclude:
                 continue
             try:
@@ -52,12 +70,7 @@ async def get_top_holders(rpc_url: str, mint: str, exclude: set | None = None) -
                 continue
             if amt > 0:
                 holders.append((addr, amt / total * 100))
-        if not holders:
-            return {}
-        return {
-            "top5": holders[:5],
-            "sum10": sum(p for _, p in holders[:10]),
-        }
+        return summarize_holders(holders)
     except Exception as e:
         log("EXTRA", f"get_top_holders failed: {e}")
         return {}

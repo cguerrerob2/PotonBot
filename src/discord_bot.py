@@ -52,7 +52,7 @@ class PotonBot:
             + (f" and **{n_evm}** EVM wallets (BASE/BSC/HOOD)" if n_evm else "")
             + f".\nAlert when **{threshold}+** wallets ape the same coin within **{window_min} min**,"
             + f" or **2+** smart traders with combined score ≥ **{score_threshold:g}** 🧠"
-            + f"\n⚡ Realtime (WebSocket). Pings <@{self.ping_user_id}> **only on buy alerts**."
+            + f"\n⚡ Realtime (WebSocket). Pings **@everyone only on buy alerts**."
         )
         if not rpc_ok:
             msg += "\n⚠️ **Solana RPC DOWN/invalid — SOL monitor can't work. Fix `SOLANA_RPC_URL`!**"
@@ -224,9 +224,9 @@ class PotonBot:
                          buys: list, info: dict, extra: dict | None = None):
         embed = self.build_embed(chain, token, count, score_sum, buys, info, extra)
         view = DashboardView(self, chain, token, count, score_sum, buys, extra or {})
-        # The only message that pings: a buy alert, and only the configured user
-        content = f"{token} <@{self.ping_user_id}>"
-        mentions = discord.AllowedMentions(everyone=False, roles=False, users=True)
+        # The only message that pings: a buy alert, for everyone in the channel
+        content = f"{token} @everyone"
+        mentions = discord.AllowedMentions(everyone=True, roles=False, users=False)
         try:
             await self._channel.send(content=content, embed=embed, view=view, allowed_mentions=mentions)
             log("ALERT", f"{count} traders -> ${info.get('symbol') or '?'} ({chain}) {token}")

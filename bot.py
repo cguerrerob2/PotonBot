@@ -127,8 +127,8 @@ async def main():
     sol_rpc_env = os.getenv("SOLANA_RPC_URL", "").strip()
     sol_ws_env = os.getenv("SOLANA_WS_URL", "").strip() or None
 
-    if not token or not channel_id or not ping_user:
-        log("Missing DISCORD_TOKEN, DISCORD_CHANNEL_ID or DISCORD_PING_USER_ID.")
+    if not token or not channel_id:
+        log("Missing DISCORD_TOKEN or DISCORD_CHANNEL_ID.")
         log("Fill them in .env (locally) or set them as Variables in Railway.")
         sys.exit(1)
 

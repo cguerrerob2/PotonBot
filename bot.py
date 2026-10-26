@@ -270,3 +270,4 @@ if __name__ == "__main__":
         log("Bot stopped.")
     except Exception as e:
         log(f"FATAL ERROR: {type(e).__name__}: {e}")
+        sys.exit(1)  # non-zero so Railway's restart-on-failure brings the bot back

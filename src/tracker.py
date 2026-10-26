@@ -49,7 +49,8 @@ class BuyTracker:
     async def add_buy(self, chain: str, token: str, wallet: str, buy_info: dict) -> tuple[int, float]:
         key = f"{chain}:{token.lower()}"
         now = time.time()
-        group = buy_info.get("trader_key") or trader_group(buy_info.get("name") or wallet)
+        # trader_name merges numbered aliases ('Cupsey 2/3'); trader_group also strips 'Main'/'Fomo'...
+        group = trader_group(buy_info.get("trader_name") or buy_info.get("name") or wallet)
 
         entry = self.tokens.setdefault(
             key, {"buys": {}, "alerted_at": 0.0, "last_alert_count": 0, "last_alert_score": 0.0})

@@ -221,7 +221,13 @@ class PotonBot:
             wallets_txt = wallets_txt[:1500] + "\n..."
         lines.append(wallets_txt)
 
-        return discord.Embed(description="\n".join(lines), color=RICK_GREEN)
+        embed = discord.Embed(description="\n".join(lines), color=RICK_GREEN)
+        if info.get("image"):
+            embed.set_thumbnail(url=info["image"])
+        elif slug:
+            # fallback: CDN de Dexscreener sirve el icono por direccion aunque el par no traiga imagen
+            embed.set_thumbnail(url=f"https://dd.dexscreener.com/ds-data/tokens/{slug}/{token}.png")
+        return embed
 
     async def send_alert(self, chain: str, token: str, count: int, score_sum: float,
                          buys: list, info: dict, extra: dict | None = None):
